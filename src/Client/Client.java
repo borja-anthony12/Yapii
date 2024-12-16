@@ -77,6 +77,8 @@ public class Client {
 	}
 
 	public static void main(String[] args) throws UnknownHostException, IOException {
+		new ClientDisplay();
+		
 		Scanner scanner = new Scanner(System.in);
 		System.out.print("Enter your username: ");
 		String username = scanner.nextLine();
