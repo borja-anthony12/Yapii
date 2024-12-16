@@ -1,4 +1,4 @@
-package main;
+package Client;
 
 import java.awt.Color;
 import java.io.BufferedReader;
