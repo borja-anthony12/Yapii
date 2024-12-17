@@ -78,10 +78,7 @@ public class Client {
 
 	public static void main(String[] args) throws UnknownHostException, IOException {
 		new ClientDisplay();
-		
-		Scanner scanner = new Scanner(System.in);
-		System.out.print("Enter your username: ");
-		String username = scanner.nextLine();
+		String username = "temp";
 		Socket socket = new Socket("10.8.4.131", 1234);
 		Client client = new Client(socket, username);
 		client.listenForMessage();

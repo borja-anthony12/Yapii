@@ -23,7 +23,7 @@ public class ClientDisplay extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         // Initialize components
-        loginPage = new LoginPage();
+        loginPage = new LoginPage(this);
         registerPage = new RegisterPage();
         mainPanel = new JPanel(new BorderLayout());
         topPanel = new JPanel(new BorderLayout());
@@ -65,12 +65,15 @@ public class ClientDisplay extends JFrame {
         // Add components to main panel
         mainPanel.add(topPanel, BorderLayout.NORTH);
         mainPanel.add(messagePanel, BorderLayout.CENTER);
-        mainPanel.add(inputPanel, BorderLayout.SOUTH);
+        mainPanel.add(inputPanel, BorderLayout.SOUTH);       
         
-        // Add main panel to frame
-        add(registerPage);
+        add(loginPage);
         
         setVisible(true);
+    }
+    
+    public void showRegistration() {
+    	
     }
     
     // Method to update the name label
