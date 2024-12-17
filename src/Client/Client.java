@@ -1,4 +1,4 @@
-package Client;
+package src.Client;
 
 import java.awt.Color;
 import java.io.BufferedReader;
@@ -80,7 +80,7 @@ public class Client {
 		Scanner scanner = new Scanner(System.in);
 		System.out.print("Enter your username: ");
 		String username = scanner.nextLine();
-		Socket socket = new Socket("10.8.4.131", 1234);
+		Socket socket = new Socket("localhost", 5000);
 		Client client = new Client(socket, username);
 		client.listenForMessage();
 		client.sendMessage();
