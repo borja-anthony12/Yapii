@@ -13,7 +13,7 @@ public class RegisterPage extends JPanel {
     private JButton registerButton;
     private JButton backToLoginButton;
 
-    public RegisterPage() {
+    public RegisterPage(ClientDisplay display) {
         
         // Create main panel with padding
         setLayout(new GridBagLayout());
@@ -80,6 +80,7 @@ public class RegisterPage extends JPanel {
                 if (validateInputs(username, email, password, confirmPassword)) {
                     // Add your registration logic here
                     System.out.println("Registration attempt - Username: " + username + ", Email: " + email);
+                    showMessage(username + " is registered");
                 }
             }
         });
@@ -90,8 +91,7 @@ public class RegisterPage extends JPanel {
         backToLoginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Add logic to switch back to login page
-                new LoginPage().setVisible(true);
+                display.showPage("LOGIN");
             }
         });
         buttonPanel.add(backToLoginButton);
@@ -131,13 +131,8 @@ public class RegisterPage extends JPanel {
     private void showError(String message) {
         JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new RegisterPage().setVisible(true);
-            }
-        });
+    
+    private void showMessage(String message) {
+    	JOptionPane.showMessageDialog(this, message, "Succesful Registration", JOptionPane.INFORMATION_MESSAGE);
     }
 }
