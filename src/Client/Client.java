@@ -5,7 +5,7 @@ import java.net.*;
 import java.util.Scanner;
 import java.util.concurrent.*;
 
-public class ChatClient {
+public class Client {
 	private static final String HOST = "localhost";
 	private static final int PORT = 5000;
 	private static volatile boolean isRunning = true;

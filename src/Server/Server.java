@@ -13,7 +13,7 @@ import java.util.logging.*;
 import javax.crypto.*;
 import javax.crypto.spec.*;
 
-public class ChatServer {
+public class Server {
 	private static final int PORT = 5000;
 	private static final int MAX_CLIENTS = 100;
 	private static final int CONNECTION_TIMEOUT = 60000;
