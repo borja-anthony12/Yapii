@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
+import java.security.spec.*;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
@@ -24,8 +25,6 @@ public class ChatServer {
 	private static final ConcurrentMap<String, ClientHandler> activeClients = new ConcurrentHashMap<>();
 	private static final ExecutorService clientExecutor = Executors.newFixedThreadPool(MAX_CLIENTS);
 	private static final Map<String, ChatRoom> chatRooms = new ConcurrentHashMap<>();
-
-	private static SecretKey encryptionKey;
 
 	// Chat room management
 	private static class ChatRoom {
@@ -82,7 +81,6 @@ public class ChatServer {
 	// Sanitize input to prevent injection and trim whitespace
 	private static String sanitizeInput(String input) {
 		if (input == null) return null;
-		// Remove non-printable characters and trim
 		return input.replaceAll("[\\p{Cntrl}]", "").trim();
 	}
 
@@ -107,58 +105,43 @@ public class ChatServer {
 
 	private static String hashPassword(String password, byte[] salt) {
 		try {
-			MessageDigest md = MessageDigest.getInstance("SHA-256");
-			md.update(salt);
-			byte[] hashedBytes = md.digest(password.getBytes(StandardCharsets.UTF_8));
-
-			// Convert to hexadecimal representation
-			StringBuilder sb = new StringBuilder();
-			for (byte b : hashedBytes) {
-				sb.append(Integer.toHexString(Byte.toUnsignedInt(b)));
-			}
-			return sb.toString();
-		} catch (NoSuchAlgorithmException e) {
+			KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 256);
+			SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+			byte[] hash = factory.generateSecret(spec).getEncoded();
+			return Base64.getEncoder().encodeToString(hash);
+		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
 			SECURITY_LOGGER.severe("Password hashing failed: " + e.getMessage());
 			return null;
 		}
 	}
 
-	// User authentication method
 	private static boolean authenticateUser(String username, String password) {
 		UserAccount account = userAccounts.get(username);
 
-		// Check if account exists and can attempt login
 		if (account == null || !account.canAttemptLogin()) {
 			return false;
 		}
 
-		// Hash the provided password with the stored salt
 		String hashedInputPassword = hashPassword(password, account.salt);
-
-		// Constant-time comparison to prevent timing attacks
 		boolean passwordMatch = MessageDigest.isEqual(
 				hashedInputPassword.getBytes(StandardCharsets.UTF_8),
 				account.hashedPassword.getBytes(StandardCharsets.UTF_8)
 		);
 
 		if (passwordMatch) {
-			// Reset login attempts on successful login
 			account.resetAttempts();
 			return true;
 		} else {
-			// Increment failed login attempts
 			account.lockAccount();
 			return false;
 		}
 	}
 
-	// Registration method
 	private static String registerNewUser(BufferedReader input, PrintWriter output) throws IOException {
 		output.println("Enter username (min 3 characters):");
 		String username = sanitizeInput(input.readLine());
 
-		// Validate username
-		if (username == null || username.length() < 3 || userAccounts.containsKey(username)) {
+		if (username == null || !username.matches("^[a-zA-Z0-9._-]{3,}$") || userAccounts.containsKey(username)) {
 			output.println("Invalid username. Registration failed.");
 			return null;
 		}
@@ -166,13 +149,11 @@ public class ChatServer {
 		output.println("Enter password (min 12 chars, mix of upper/lower/number/special chars):");
 		String password = sanitizeInput(input.readLine());
 
-		// Validate password complexity
 		if (!isValidPassword(password)) {
 			output.println("Password does not meet complexity requirements.");
 			return null;
 		}
 
-		// Generate salt and hash password
 		byte[] salt = new byte[16];
 		new SecureRandom().nextBytes(salt);
 		String hashedPassword = hashPassword(password, salt);
@@ -188,12 +169,12 @@ public class ChatServer {
 		return username;
 	}
 
-	// Nested ClientHandler class (stub for demonstration)
 	private static class ClientHandler implements Runnable {
 		private final Socket clientSocket;
 		private BufferedReader input;
 		private PrintWriter output;
 		private String username;
+		private String currentRoom = "GENERAL";
 
 		public ClientHandler(Socket socket) {
 			this.clientSocket = socket;
@@ -221,14 +202,87 @@ public class ChatServer {
 			output.println(String.format("[%s] %s: %s", room, sender, message));
 		}
 
+		private void processCommand(String command) {
+			String[] parts = command.split("\\s+", 3);
+			if (parts.length == 0) return;
+
+			String cmd = parts[0].toUpperCase();
+			switch (cmd) {
+				case "MESSAGE":
+					if (parts.length >= 3) {
+						String room = parts[1];
+						String message = parts[2];
+						ChatRoom chatRoom = chatRooms.get(room);
+						if (chatRoom != null) {
+							chatRoom.broadcast(username, message);
+						} else if (room.equals("GENERAL")) {
+							// Broadcast to all active clients
+							for (ClientHandler client : activeClients.values()) {
+								client.sendMessage(username, message);
+							}
+						}
+					}
+					break;
+
+				case "JOIN":
+					if (parts.length >= 2) {
+						String roomName = parts[1];
+						ChatRoom room = chatRooms.computeIfAbsent(roomName, ChatRoom::new);
+						room.addMember(this);
+						currentRoom = roomName;
+						UserAccount account = userAccounts.get(username);
+						if (account != null) {
+							account.joinedRooms.add(roomName);
+						}
+						sendMessage("SERVER", "Joined room: " + roomName);
+					}
+					break;
+
+				case "LEAVE":
+					if (parts.length >= 2) {
+						String roomName = parts[1];
+						ChatRoom room = chatRooms.get(roomName);
+						if (room != null) {
+							room.removeMember(this);
+							UserAccount account = userAccounts.get(username);
+							if (account != null) {
+								account.joinedRooms.remove(roomName);
+							}
+						}
+						currentRoom = "GENERAL";
+					}
+					break;
+
+				case "PM":
+					if (parts.length >= 3) {
+						String recipient = parts[1];
+						String message = parts[2];
+						ClientHandler targetClient = activeClients.get(recipient);
+						if (targetClient != null) {
+							targetClient.output.println(String.format("[PM] %s: %s", username, message));
+							this.output.println(String.format("[PM to %s]: %s", recipient, message));
+						} else {
+							sendMessage("SERVER", "User " + recipient + " is not online.");
+						}
+					}
+					break;
+
+				case "LOGOUT":
+					// Handle cleanup before logout
+					for (ChatRoom room : chatRooms.values()) {
+						room.removeMember(this);
+					}
+					activeClients.remove(username);
+					break;
+			}
+		}
+
 		@Override
 		public void run() {
 			try {
-				// Initialize input and output streams
 				input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 				output = new PrintWriter(clientSocket.getOutputStream(), true);
 
-				// Authentication flow
 				while (username == null) {
 					output.println("1. Login\n2. Register\n3. Exit");
 					String choice = sanitizeInput(input.readLine());
@@ -247,11 +301,30 @@ public class ChatServer {
 					}
 				}
 
-				// Additional client handling logic would go here
+				activeClients.put(username, this);
+				output.println("Welcome to the chat server!");
+
+				// Join the general chat room by default
+				ChatRoom generalRoom = chatRooms.computeIfAbsent("GENERAL", ChatRoom::new);
+				generalRoom.addMember(this);
+
+				// Main message processing loop
+				String clientMessage;
+				while ((clientMessage = input.readLine()) != null) {
+					processCommand(clientMessage);
+				}
+
 			} catch (IOException e) {
 				SECURITY_LOGGER.warning("Client connection error: " + e.getMessage());
 			} finally {
 				try {
+					if (username != null) {
+						// Clean up when client disconnects
+						for (ChatRoom room : chatRooms.values()) {
+							room.removeMember(this);
+						}
+						activeClients.remove(username);
+					}
 					clientSocket.close();
 				} catch (IOException e) {
 					SECURITY_LOGGER.severe("Error closing socket: " + e.getMessage());
@@ -260,20 +333,25 @@ public class ChatServer {
 		}
 	}
 
-	// Main server startup method (stub)
 	public static void main(String[] args) {
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			try {
+				clientExecutor.shutdownNow();
+				SECURITY_LOGGER.info("Server shut down gracefully.");
+			} catch (Exception e) {
+				SECURITY_LOGGER.severe("Error during shutdown: " + e.getMessage());
+			}
+		}));
+
 		try (ServerSocket serverSocket = new ServerSocket(PORT)) {
 			SECURITY_LOGGER.info("Secure Chat Server started on port " + PORT);
 
 			while (true) {
 				Socket clientSocket = serverSocket.accept();
-				ClientHandler clientHandler = new ClientHandler(clientSocket);
-				clientExecutor.submit(clientHandler);
+				clientExecutor.submit(new ClientHandler(clientSocket));
 			}
 		} catch (IOException e) {
 			SECURITY_LOGGER.severe("Server startup failed: " + e.getMessage());
-		} finally {
-			clientExecutor.shutdown();
 		}
 	}
 }
