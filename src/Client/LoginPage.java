@@ -16,21 +16,21 @@ public class LoginPage extends JPanel {
     
     public LoginPage(ClientDisplay display) {
         setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(800, 400));
+        setPreferredSize(ClientDisplay.screenSize);
         
         // Welcome Panel (Left side - Purple, 1/3 width)
         JPanel welcomePanel = new RoundedPanel(
             CORNER_RADIUS,
-            true, true, true, true, // all corners rounded
-            new Color(198, 156, 209)  // Light purple
+            false, true, false, true, // all corners rounded
+            new Color(188, 130, 205)  // Light purple
         );
         welcomePanel.setLayout(new GridBagLayout());
-        welcomePanel.setPreferredSize(new Dimension(266, 400)); // 1/3 of 800px
+        welcomePanel.setPreferredSize(new Dimension (ClientDisplay.screenSize.width / 3, ClientDisplay.screenSize.height)); // 1/3 of screen
         
         JLabel welcomeLabel = new JLabel("Welcome");
         JLabel backLabel = new JLabel("Back!");
-        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 36));
-        backLabel.setFont(new Font("Arial", Font.BOLD, 36));
+        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 64));
+        backLabel.setFont(new Font("Arial", Font.BOLD, 64));
         welcomeLabel.setForeground(Color.WHITE);
         backLabel.setForeground(Color.WHITE);
         
@@ -44,8 +44,8 @@ public class LoginPage extends JPanel {
         // Login Panel (Right side - Mint Green, 2/3 width)
         JPanel loginPanel = new RoundedPanel(
             CORNER_RADIUS,
-            true, true, true, true, // all corners rounded
-            new Color(202, 231, 223)  // Mint green
+            true, false, true, false, // all corners rounded
+            new Color(178, 230, 210)  // Mint green
         );
         loginPanel.setLayout(new GridBagLayout());
         
@@ -56,27 +56,30 @@ public class LoginPage extends JPanel {
         
         // Login header
         JLabel loginHeader = new JLabel("LOGIN");
-        loginHeader.setFont(new Font("Arial", Font.BOLD, 24));
+        loginHeader.setFont(new Font("Arial", Font.BOLD, 96));
+        loginHeader.setForeground(Color.WHITE);
         loginHeader.setHorizontalAlignment(SwingConstants.LEFT);
         gbc.insets = new Insets(0, 30, 20, 30);
         loginPanel.add(loginHeader, gbc);
         
         // Username field
-        JLabel usernameLabel = new JLabel("USERNAME:");
-        usernameLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        JLabel usernameLabel = new JLabel("USERNAME");
+        usernameLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+        usernameLabel.setForeground(Color.WHITE);
         gbc.insets = new Insets(5, 30, 5, 30);
         loginPanel.add(usernameLabel, gbc);
         
-        usernameField = new JTextField(20);
+        usernameField = new JTextField(30);
         styleField(usernameField);
         loginPanel.add(usernameField, gbc);
         
         // Password field
-        JLabel passwordLabel = new JLabel("PASSWORD:");
-        passwordLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        JLabel passwordLabel = new JLabel("PASSWORD");
+        passwordLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+        passwordLabel.setForeground(Color.WHITE);
         loginPanel.add(passwordLabel, gbc);
         
-        passwordField = new JPasswordField(20);
+        passwordField = new JPasswordField(30);
         styleField(passwordField);
         loginPanel.add(passwordField, gbc);
         
@@ -84,7 +87,10 @@ public class LoginPage extends JPanel {
         JPanel registerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         registerPanel.setOpaque(false);
         JLabel newUserLabel = new JLabel("New User? ");
+        newUserLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        newUserLabel.setForeground(Color.WHITE);
         JLabel registerLabel = new JLabel("Create an account");
+        registerLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         registerLabel.setForeground(new Color(51, 122, 183));
         registerLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         registerLabel.addMouseListener(new MouseAdapter() {
@@ -104,11 +110,12 @@ public class LoginPage extends JPanel {
         
         // Set main panel properties
         setOpaque(false);
-        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
     }
     
     private void styleField(JTextField field) {
-        field.setPreferredSize(new Dimension(field.getPreferredSize().width, 35));
+        field.setPreferredSize(new Dimension(field.getPreferredSize().width, 55));
+        field.setFont(new Font("Arial", Font.PLAIN, 20));
         field.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(Color.WHITE),
             new EmptyBorder(5, 10, 5, 10)
@@ -126,8 +133,7 @@ class RoundedPanel extends JPanel {
     private final boolean roundBottomRight;
     private final Color backgroundColor;
 
-    public RoundedPanel(int radius, boolean roundTopLeft, boolean roundTopRight, 
-                       boolean roundBottomLeft, boolean roundBottomRight, Color backgroundColor) {
+    public RoundedPanel(int radius, boolean roundTopLeft, boolean roundTopRight, boolean roundBottomLeft, boolean roundBottomRight, Color backgroundColor) {
         this.radius = radius;
         this.roundTopLeft = roundTopLeft;
         this.roundTopRight = roundTopRight;
