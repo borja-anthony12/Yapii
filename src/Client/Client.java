@@ -78,7 +78,7 @@ public class Client {
 
 	public static void main(String[] args) throws UnknownHostException, IOException {
 		String username = "temp";
-		Socket socket = new Socket("10.8.4.131", 1234);
+		Socket socket = new Socket("localhost", 1234);
 		ClientDisplay display = new ClientDisplay();
 		Client client = new Client(socket, username);
 		client.listenForMessage();
