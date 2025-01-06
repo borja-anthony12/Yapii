@@ -2,106 +2,104 @@ package Client;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
+import javax.swing.border.EmptyBorder;
 
 public class RegisterPage extends JPanel {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JPasswordField confirmPasswordField;
     private JTextField emailField;
-    private JButton registerButton;
-    private JButton backToLoginButton;
-
-    public RegisterPage() {
+    
+    public RegisterPage(ClientDisplay display) {
+        setLayout(new BorderLayout());
+        setPreferredSize(ClientDisplay.screenSize);
         
-        // Create main panel with padding
-        setLayout(new GridBagLayout());
-        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        // Main Panel
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new GridBagLayout());
+        mainPanel.setBackground(new Color(178, 230, 210));  // Mint green
         
         GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.insets = new Insets(5, 30, 5, 30);
         
-        // Username label and field
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        add(new JLabel("Username:"), gbc);
+        // Register header
+        JLabel registerHeader = new JLabel("REGISTER");
+        registerHeader.setFont(new Font("Arial", Font.BOLD, 96));
+        registerHeader.setForeground(Color.WHITE);
+        registerHeader.setHorizontalAlignment(SwingConstants.LEFT);
+        gbc.insets = new Insets(0, 30, 20, 30);
+        mainPanel.add(registerHeader, gbc);
         
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        usernameField = new JTextField(20);
-        add(usernameField, gbc);
+        // Username field
+        addFormField(mainPanel, "USERNAME", usernameField = new JTextField(30), gbc);
         
-        // Email label and field
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        add(new JLabel("Email:"), gbc);
+        // Email field
+        addFormField(mainPanel, "EMAIL", emailField = new JTextField(30), gbc);
         
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        emailField = new JTextField(20);
-        add(emailField, gbc);
+        // Password field
+        addFormField(mainPanel, "PASSWORD", passwordField = new JPasswordField(30), gbc);
         
-        // Password label and field
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        add(new JLabel("Password:"), gbc);
+        // Confirm Password field
+        addFormField(mainPanel, "CONFIRM PASSWORD", confirmPasswordField = new JPasswordField(30), gbc);
         
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        passwordField = new JPasswordField(20);
-        add(passwordField, gbc);
-        
-        // Confirm password label and field
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        add(new JLabel("Confirm Password:"), gbc);
-        
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        confirmPasswordField = new JPasswordField(20);
-        add(confirmPasswordField, gbc);
-        
-        // Panel for buttons
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));
-        
-        // Register button
-        registerButton = new JButton("Register");
-        registerButton.addActionListener(new ActionListener() {
+        // Back to login link panel
+        JPanel loginPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        loginPanel.setOpaque(false);
+        JLabel existingUserLabel = new JLabel("Already have an account? ");
+        existingUserLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        existingUserLabel.setForeground(Color.WHITE);
+        JLabel loginLabel = new JLabel("Login here");
+        loginLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        loginLabel.setForeground(new Color(51, 122, 183));
+        loginLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        loginLabel.addMouseListener(new MouseAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                String username = usernameField.getText();
-                String email = emailField.getText();
-                String password = new String(passwordField.getPassword());
-                String confirmPassword = new String(confirmPasswordField.getPassword());
-                
-                if (validateInputs(username, email, password, confirmPassword)) {
-                    // Add your registration logic here
-                    System.out.println("Registration attempt - Username: " + username + ", Email: " + email);
-                }
+            public void mouseClicked(MouseEvent e) {
+                display.showPage("LOGIN");
             }
         });
-        buttonPanel.add(registerButton);
+        loginPanel.add(existingUserLabel);
+        loginPanel.add(loginLabel);
+        gbc.insets = new Insets(10, 30, 20, 30);
+        mainPanel.add(loginPanel, gbc);
         
-        // Back to login button
-        backToLoginButton = new JButton("Back to Login");
-        backToLoginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Add logic to switch back to login page
-                new LoginPage().setVisible(true);
-            }
-        });
-        buttonPanel.add(backToLoginButton);
+        add(mainPanel, BorderLayout.CENTER);
+        setOpaque(false);
+    }
+    
+    private void addFormField(JPanel panel, String labelText, JTextField field, GridBagConstraints gbc) {
+        JLabel label = new JLabel(labelText);
+        label.setFont(new Font("Arial", Font.PLAIN, 20));
+        label.setForeground(Color.WHITE);
+        gbc.insets = new Insets(5, 30, 5, 30);
+        panel.add(label, gbc);
         
-        // Add button panel to main panel
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.CENTER;
-        add(buttonPanel, gbc);
+        styleField(field);
+        panel.add(field, gbc);
+    }
+    
+    private void styleField(JTextField field) {
+        field.setPreferredSize(new Dimension(field.getPreferredSize().width, 55));
+        field.setFont(new Font("Arial", Font.PLAIN, 20));
+        field.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.WHITE),
+            new EmptyBorder(5, 10, 5, 10)
+        ));
+        field.setBackground(Color.WHITE);
+    }
+
+    private void handleRegister() {
+        String username = usernameField.getText();
+        String email = emailField.getText();
+        String password = new String(passwordField.getPassword());
+        String confirmPassword = new String(confirmPasswordField.getPassword());
+        
+        if (validateInputs(username, email, password, confirmPassword)) {
+            showMessage(username + " is registered");
+        }
     }
     
     private boolean validateInputs(String username, String email, String password, String confirmPassword) {
@@ -131,13 +129,8 @@ public class RegisterPage extends JPanel {
     private void showError(String message) {
         JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new RegisterPage().setVisible(true);
-            }
-        });
+    
+    private void showMessage(String message) {
+        JOptionPane.showMessageDialog(this, message, "Successful Registration", JOptionPane.INFORMATION_MESSAGE);
     }
 }

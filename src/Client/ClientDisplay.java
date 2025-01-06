@@ -2,50 +2,61 @@ package Client;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 
 public class ClientDisplay extends JFrame {
+    public final static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     private LoginPage loginPage;
     private RegisterPage registerPage;
     private JPanel mainPanel;
     private JPanel topPanel;
     private JPanel messagePanel;
     private JPanel inputPanel;
-    private JTextField sendMessage;
-    private JButton send;
+    private JTextField messageText;
+    private JButton sendButton;
     private JButton exitButton;
+    private JButton importFile;
     private JLabel nameLabel;
+    private File selectedFile;
+    private JLayeredPane layeredPane;
+    private Timer animationTimer;
+    private boolean isAnimating = false;
     private JTextArea messageArea;
     private JScrollPane scrollPane;
     private Client client;
 
     public ClientDisplay() {
+        setSize(screenSize);
+        setUndecorated(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        layeredPane = new JLayeredPane();
+        layeredPane.setPreferredSize(screenSize);
         initializeComponents();
         client = new Client(this);
     }
 
     private void initializeComponents() {
-        setBounds(0, 0, 800, 600);
-        setUndecorated(true);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         loginPage = new LoginPage(this);
         registerPage = new RegisterPage(this);
         mainPanel = new JPanel(new BorderLayout());
         topPanel = new JPanel(new BorderLayout());
         messagePanel = new JPanel(new BorderLayout());
         inputPanel = new JPanel(new BorderLayout());
-        sendMessage = new JTextField(30);
-        send = new JButton("Send");
+        messageText = new JTextField(30);
+        sendButton = new JButton("Send");
         exitButton = new JButton("Exit");
+        importFile = new JButton("Import File");
         nameLabel = new JLabel("User Name", SwingConstants.CENTER);
         messageArea = new JTextArea();
         scrollPane = new JScrollPane(messageArea);
 
         setupComponents();
+        setupLayeredPane();
         styleComponents();
         layoutComponents();
 
-        add(loginPage);
+        setContentPane(layeredPane);
         setVisible(true);
     }
 
@@ -58,8 +69,32 @@ public class ClientDisplay extends JFrame {
             System.exit(0);
         });
 
-        send.addActionListener(e -> sendMessage());
-        sendMessage.addActionListener(e -> sendMessage());
+        sendButton.addActionListener(e -> sendMessage());
+        messageText.addActionListener(e -> sendMessage());
+
+        importFile.addActionListener(e -> {
+            try {
+                UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            
+            FileDialog fileDialog = new FileDialog(this, "Choose a file", FileDialog.LOAD);
+            fileDialog.setVisible(true);
+            
+            if (fileDialog.getFile() != null) {
+                selectedFile = new File(fileDialog.getDirectory() + fileDialog.getFile());
+                messageText.setText("Selected file: " + selectedFile.getName());
+            }
+        });
+    }
+
+    private void setupLayeredPane() {
+        loginPage.setBounds(0, 0, screenSize.width, screenSize.height);
+        registerPage.setBounds(screenSize.width, 0, screenSize.width, screenSize.height);
+        
+        layeredPane.add(loginPage, JLayeredPane.DEFAULT_LAYER);
+        layeredPane.add(registerPage, JLayeredPane.DEFAULT_LAYER);
     }
 
     private void styleComponents() {
@@ -70,16 +105,20 @@ public class ClientDisplay extends JFrame {
     }
 
     private void layoutComponents() {
-        JPanel exitPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        exitPanel.add(exitButton);
+        JPanel iconPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        iconPanel.add(exitButton);
 
-        topPanel.add(exitPanel, BorderLayout.EAST);
-        topPanel.add(nameLabel, BorderLayout.CENTER);
+        topPanel.add(iconPanel, BorderLayout.EAST);
+        topPanel.add(nameLabel, BorderLayout.WEST);
 
         messagePanel.add(scrollPane, BorderLayout.CENTER);
 
-        inputPanel.add(sendMessage, BorderLayout.CENTER);
-        inputPanel.add(send, BorderLayout.EAST);
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+        buttonPanel.add(importFile);
+        buttonPanel.add(sendButton);
+
+        inputPanel.add(messageText, BorderLayout.CENTER);
+        inputPanel.add(buttonPanel, BorderLayout.EAST);
 
         mainPanel.add(topPanel, BorderLayout.NORTH);
         mainPanel.add(messagePanel, BorderLayout.CENTER);
@@ -87,10 +126,10 @@ public class ClientDisplay extends JFrame {
     }
 
     private void sendMessage() {
-        String text = sendMessage.getText().trim();
+        String text = messageText.getText().trim();
         if (!text.isEmpty()) {
             client.sendMessage(text);
-            sendMessage.setText("");
+            messageText.setText("");
         }
     }
 
@@ -98,18 +137,61 @@ public class ClientDisplay extends JFrame {
         client.authenticate(username, password, isRegistration);
     }
 
-    public void showMainPanel() {
-        getContentPane().removeAll();
-        getContentPane().add(mainPanel);
+    public void showPage(String str) {
+        if (isAnimating) return;
+        
+        switch (str) {
+            case "REG":
+                slideTransition(loginPage, registerPage, true);
+                break;
+            case "LOGIN":
+                slideTransition(registerPage, loginPage, false);
+                break;
+            case "MAIN":
+                layeredPane.removeAll();
+                setContentPane(mainPanel);
+                break;
+        }
         revalidate();
         repaint();
     }
-
-    public void showRegistration() {
-        getContentPane().removeAll();
-        getContentPane().add(registerPage);
-        revalidate();
-        repaint();
+    
+    private void slideTransition(JComponent fromPage, JComponent toPage, boolean slideLeft) {
+        isAnimating = true;
+        int steps = 15;
+        int delay = 1;
+        
+        fromPage.setVisible(true);
+        toPage.setVisible(true);
+        
+        int startFrom = 0;
+        int startTo = slideLeft ? screenSize.width : -screenSize.width;
+        int endFrom = slideLeft ? -screenSize.width : screenSize.width;
+        int endTo = 0;
+        
+        toPage.setLocation(startTo, 0);
+        
+        animationTimer = new Timer(delay, null);
+        final int[] step = {0};
+        
+        animationTimer.addActionListener(e -> {
+            step[0]++;
+            float progress = (float)Math.pow(step[0] / (double)steps, 2);
+            
+            int currentFromX = startFrom + (int)((endFrom - startFrom) * progress);
+            int currentToX = startTo + (int)((endTo - startTo) * progress);
+            
+            fromPage.setLocation(currentFromX, 0);
+            toPage.setLocation(currentToX, 0);
+            
+            if (step[0] >= steps) {
+                animationTimer.stop();
+                isAnimating = false;
+                fromPage.setVisible(false);
+            }
+        });
+        
+        animationTimer.start();
     }
 
     public void setName(String name) {
@@ -125,112 +207,11 @@ public class ClientDisplay extends JFrame {
         JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
+    public File getSelectedFile() {
+        return selectedFile;
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new ClientDisplay());
-    }
-    class LoginPage extends JPanel {
-        private JTextField usernameField;
-        private JPasswordField passwordField;
-        private JButton loginButton;
-        private JButton registerButton;
-        private ClientDisplay parent;
-
-        public LoginPage(ClientDisplay parent) {
-            this.parent = parent;
-            setLayout(new GridBagLayout());
-            initializeComponents();
-        }
-
-        private void initializeComponents() {
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.insets = new Insets(5, 5, 5, 5);
-
-            usernameField = new JTextField(20);
-            passwordField = new JPasswordField(20);
-            loginButton = new JButton("Login");
-            registerButton = new JButton("Register");
-
-            gbc.gridx = 0; gbc.gridy = 0;
-            add(new JLabel("Username:"), gbc);
-
-            gbc.gridx = 1;
-            add(usernameField, gbc);
-
-            gbc.gridx = 0; gbc.gridy = 1;
-            add(new JLabel("Password:"), gbc);
-
-            gbc.gridx = 1;
-            add(passwordField, gbc);
-
-            gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 2;
-            JPanel buttonPanel = new JPanel();
-            buttonPanel.add(loginButton);
-            buttonPanel.add(registerButton);
-            add(buttonPanel, gbc);
-
-            loginButton.addActionListener(e -> {
-                parent.authenticate(usernameField.getText(), new String(passwordField.getPassword()), false);
-                parent.setName(usernameField.getText());
-            });
-
-            registerButton.addActionListener(e -> parent.showRegistration());
-        }
-    }
-
-    class RegisterPage extends JPanel {
-        private JTextField usernameField;
-        private JPasswordField passwordField;
-        private JButton registerButton;
-        private JButton backButton;
-        private ClientDisplay parent;
-
-        public RegisterPage(ClientDisplay parent) {
-            this.parent = parent;
-            setLayout(new GridBagLayout());
-            initializeComponents();
-        }
-
-        private void initializeComponents() {
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.insets = new Insets(5, 5, 5, 5);
-
-            usernameField = new JTextField(20);
-            passwordField = new JPasswordField(20);
-            registerButton = new JButton("Register");
-            backButton = new JButton("Back to Login");
-
-            gbc.gridx = 0; gbc.gridy = 0;
-            add(new JLabel("Desired Username:"), gbc);
-
-            gbc.gridx = 1;
-            add(usernameField, gbc);
-
-            gbc.gridx = 0; gbc.gridy = 1;
-            add(new JLabel("Password:"), gbc);
-
-            gbc.gridx = 1;
-            add(passwordField, gbc);
-
-            gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 2;
-            JPanel buttonPanel = new JPanel();
-            buttonPanel.add(registerButton);
-            buttonPanel.add(backButton);
-            add(buttonPanel, gbc);
-
-            registerButton.addActionListener(e -> {
-                parent.authenticate(usernameField.getText(), new String(passwordField.getPassword()), true);
-                parent.setName(usernameField.getText());
-            });
-
-            backButton.addActionListener(e -> {
-                Container container = getParent();
-                if (container != null) {
-                    container.remove(this);
-                    container.add(new LoginPage(parent));
-                    container.revalidate();
-                    container.repaint();
-                }
-            });
-        }
     }
 }
