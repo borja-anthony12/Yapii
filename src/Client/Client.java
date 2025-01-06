@@ -1,87 +1,115 @@
 package Client;
 
-import java.awt.Color;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.Scanner;
+import java.io.*;
+import java.net.*;
+import java.util.concurrent.*;
 
 public class Client {
+	private static final String HOST = "localhost";
+	private static final int PORT = 5000;
 	private Socket socket;
-	private BufferedReader br;
-	private BufferedWriter bw;
-	private String username;
+	private BufferedReader serverInput;
+	private PrintWriter serverOutput;
+	private ClientDisplay display;
+	private volatile boolean isRunning = true;
+	private String currentRoom = "GENERAL";
 
-	public Client(Socket socket, String username) {
+	public Client(ClientDisplay display) {
+		this.display = display;
+		setupNetworking();
+		startMessageReceiver();
+	}
+
+	private void setupNetworking() {
 		try {
-			this.socket = socket;
-			this.username = username;
-			this.bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-			this.br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			socket = new Socket(HOST, PORT);
+			serverInput = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			serverOutput = new PrintWriter(socket.getOutputStream(), true);
 		} catch (IOException e) {
-			closeEverything(socket, br, bw);
+			display.showError("Could not connect to server");
 		}
 	}
 
-	public void sendMessage() {
-		try {
-			bw.write(username);
-			bw.newLine();
-			bw.flush();
-
-			Scanner scanner = new Scanner(System.in);
-			while (socket.isConnected()) {
-				String message = scanner.nextLine();
-				bw.write("\u001B[32m" + username + "\u001B[0m" + ": " + message + "\u001B[0m");
-				bw.newLine();
-				bw.flush();
-			}
-		} catch (IOException e) {
-			closeEverything(socket, br, bw);
-		}
-	}
-
-	public void listenForMessage() {
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
+	private void startMessageReceiver() {
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		executor.submit(() -> {
+			try {
 				String message;
-				while (socket.isConnected()) {
-					try {
-						message = br.readLine();
-						System.out.println(message);
-					} catch (IOException e) {
-						closeEverything(socket, br, bw);
-					}
+				while (isRunning && (message = serverInput.readLine()) != null) {
+					final String finalMessage = message;
+					javax.swing.SwingUtilities.invokeLater(() -> processServerMessage(finalMessage));
+				}
+			} catch (IOException e) {
+				if (isRunning) {
+					display.showError("Lost connection to server");
 				}
 			}
-		}).start();
+		});
+		executor.shutdown();
 	}
 
-	private void closeEverything(Socket socket, BufferedReader br, BufferedWriter bw) {
-		try {
-			if (socket != null)
-				socket.close();
-			if (br != null)
-				br.close();
-			if (bw != null)
-				bw.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+	private void processServerMessage(String message) {
+		if (message.contains("Login successful")) {
+			display.showMainPanel();
+			display.appendMessage("\u001B[32m" + message + "\u001B[0m");
+		} else if (message.contains("Registration successful")) {
+			display.appendMessage("\u001B[32m" + message + "\u001B[0m");
+		} else if (message.contains("Login failed")) {
+			display.appendMessage("\u001B[31m" + message + "\u001B[0m");
+		} else {
+			display.appendMessage(message);
 		}
 	}
 
-	public static void main(String[] args) throws UnknownHostException, IOException {
-		String username = "temp";
-		Socket socket = new Socket("localhost", 1234);
-		ClientDisplay display = new ClientDisplay();
-		Client client = new Client(socket, username);
-		client.listenForMessage();
-		client.sendMessage();
+	public void sendMessage(String text) {
+		if (text.startsWith("/")) {
+			handleCommand(text);
+		} else {
+			serverOutput.println("MESSAGE " + currentRoom + " " + text);
+		}
+	}
+
+	public void authenticate(String username, String password, boolean isRegistration) {
+		serverOutput.println(isRegistration ? "2" : "1");
+		serverOutput.println(username);
+		serverOutput.println(password);
+	}
+
+	private void handleCommand(String command) {
+		String[] parts = command.split("\\s+", 3);
+		String cmd = parts[0].toLowerCase();
+
+		switch (cmd) {
+			case "/exit":
+				serverOutput.println("LOGOUT");
+				System.exit(0);
+				break;
+			case "/join":
+				if (parts.length >= 2) {
+					currentRoom = parts[1].toUpperCase();
+					serverOutput.println("JOIN " + currentRoom);
+				}
+				break;
+			case "/pm":
+				if (parts.length >= 3) {
+					serverOutput.println("PM " + parts[1] + " " + parts[2]);
+				}
+				break;
+			case "/leave":
+				if (!currentRoom.equals("GENERAL")) {
+					serverOutput.println("LEAVE " + currentRoom);
+					currentRoom = "GENERAL";
+				}
+				break;
+			default:
+				display.appendMessage("Unknown command. Type /help for available commands.");
+		}
+	}
+
+	public void shutdown() {
+		isRunning = false;
+		if (serverOutput != null) {
+			serverOutput.println("LOGOUT");
+		}
 	}
 }

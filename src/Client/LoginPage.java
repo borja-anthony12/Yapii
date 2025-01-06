@@ -190,4 +190,8 @@ class RoundedPanel extends JPanel {
         g2.fill(path);
         g2.dispose();
     }
+
+    public LoginPage() {
+
+    }
 }
