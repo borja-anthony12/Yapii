@@ -72,4 +72,8 @@ public class LoginPage extends JPanel {
             }
         });
     }
+
+    public LoginPage() {
+
+    }
 }
