@@ -70,7 +70,6 @@ public class LoginPage extends JPanel {
         loginPanel.add(usernameLabel, gbc);
 
         usernameField = new JTextField(30);
-        usernameField.setText("Enter username");
         styleField(usernameField);
         loginPanel.add(usernameField, gbc);
 
@@ -81,7 +80,6 @@ public class LoginPage extends JPanel {
         loginPanel.add(passwordLabel, gbc);
 
         passwordField = new JPasswordField(30);
-        passwordField.setText("Enter password");
         styleField(passwordField);
         loginPanel.add(passwordField, gbc);
 
@@ -109,6 +107,21 @@ public class LoginPage extends JPanel {
                 loginButton.setBackground(Color.WHITE);
                 loginButton.setForeground(new Color(178, 230, 210));
             }
+        });
+        
+        loginButton.addActionListener(e -> {
+            String username = usernameField.getText().trim();
+            String password = new String(passwordField.getPassword()).trim();
+            
+            if (username.isEmpty() || password.isEmpty()) {
+                JOptionPane.showMessageDialog(LoginPage.this, 
+                    "Username and password cannot be empty", 
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            display.authenticate(username, password, false);
         });
 
         // Register link panel
