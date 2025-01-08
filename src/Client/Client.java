@@ -1,5 +1,6 @@
 package Client;
 
+import javax.swing.*;
 import java.io.*;
 import java.net.*;
 import java.util.concurrent.*;
@@ -10,14 +11,17 @@ public class Client {
 	private Socket socket;
 	private BufferedReader serverInput;
 	private PrintWriter serverOutput;
-	private ClientDisplay display;
+	private final ClientDisplay display;
 	private volatile boolean isRunning = true;
 	private String currentRoom = "GENERAL";
+	private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
 	public Client(ClientDisplay display) {
 		this.display = display;
 		setupNetworking();
-		startMessageReceiver();
+		if (socket != null && socket.isConnected()) {
+			startMessageReceiver();
+		}
 	}
 
 	private void setupNetworking() {
@@ -26,31 +30,33 @@ public class Client {
 			serverInput = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			serverOutput = new PrintWriter(socket.getOutputStream(), true);
 		} catch (IOException e) {
-			display.showError("Could not connect to server");
+			SwingUtilities.invokeLater(() ->
+					display.showError("Could not connect to server: " + e.getMessage())
+			);
 		}
 	}
 
 	private void startMessageReceiver() {
-		ExecutorService executor = Executors.newSingleThreadExecutor();
-		executor.submit(() -> {
+		executor.execute(() -> {
 			try {
 				String message;
 				while (isRunning && (message = serverInput.readLine()) != null) {
 					final String finalMessage = message;
-					javax.swing.SwingUtilities.invokeLater(() -> processServerMessage(finalMessage));
+					SwingUtilities.invokeLater(() -> processServerMessage(finalMessage));
 				}
 			} catch (IOException e) {
 				if (isRunning) {
-					display.showError("Lost connection to server");
+					SwingUtilities.invokeLater(() ->
+							display.showError("Lost connection to server")
+					);
 				}
 			}
 		});
-		executor.shutdown();
 	}
 
 	private void processServerMessage(String message) {
 		if (message.contains("Login successful")) {
-			display.showMainPanel();
+			display.showPage("MAIN");
 			display.appendMessage("\u001B[32m" + message + "\u001B[0m");
 		} else if (message.contains("Registration successful")) {
 			display.appendMessage("\u001B[32m" + message + "\u001B[0m");
@@ -80,36 +86,50 @@ public class Client {
 		String cmd = parts[0].toLowerCase();
 
 		switch (cmd) {
-			case "/exit":
-				serverOutput.println("LOGOUT");
-				System.exit(0);
-				break;
-			case "/join":
-				if (parts.length >= 2) {
-					currentRoom = parts[1].toUpperCase();
-					serverOutput.println("JOIN " + currentRoom);
-				}
-				break;
-			case "/pm":
-				if (parts.length >= 3) {
-					serverOutput.println("PM " + parts[1] + " " + parts[2]);
-				}
-				break;
-			case "/leave":
-				if (!currentRoom.equals("GENERAL")) {
-					serverOutput.println("LEAVE " + currentRoom);
-					currentRoom = "GENERAL";
-				}
-				break;
-			default:
-				display.appendMessage("Unknown command. Type /help for available commands.");
+			case "/exit" -> handleExit();
+			case "/join" -> handleJoin(parts);
+			case "/pm" -> handlePrivateMessage(parts);
+			case "/leave" -> handleLeave();
+			default -> display.appendMessage("Unknown command. Available: /join, /leave, /pm, /exit");
+		}
+	}
+
+	private void handleExit() {
+		serverOutput.println("LOGOUT");
+		shutdown();
+		System.exit(0);
+	}
+
+	private void handleJoin(String[] parts) {
+		if (parts.length >= 2) {
+			currentRoom = parts[1].toUpperCase();
+			serverOutput.println("JOIN " + currentRoom);
+		}
+	}
+
+	private void handlePrivateMessage(String[] parts) {
+		if (parts.length >= 3) {
+			serverOutput.println("PM " + parts[1] + " " + parts[2]);
+		}
+	}
+
+	private void handleLeave() {
+		if (!currentRoom.equals("GENERAL")) {
+			serverOutput.println("LEAVE " + currentRoom);
+			currentRoom = "GENERAL";
 		}
 	}
 
 	public void shutdown() {
 		isRunning = false;
-		if (serverOutput != null) {
-			serverOutput.println("LOGOUT");
+		executor.shutdownNow();
+		try {
+			if (socket != null && !socket.isClosed()) {
+				serverOutput.println("LOGOUT");
+				socket.close();
+			}
+		} catch (IOException e) {
+			display.showError("Error during shutdown: " + e.getMessage());
 		}
 	}
 }

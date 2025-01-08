@@ -6,20 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="17e61991-7383-4a62-806e-79fbf43dbfa0" name="Changes" comment="Fixed names">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Yapii/.classpath" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Yapii/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Yapii/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Yapii/.idea/Yapii.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Yapii/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Yapii/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Yapii/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Yapii/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Yapii/.project" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Yapii/README.md" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Client/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/Client.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Client/ClientDisplay.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ClientDisplay.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Client/LoginPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/LoginPage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Server/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/Server.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,6 +50,7 @@
     "Application.ChatClient.executor": "Run",
     "Application.ChatServer.executor": "Run",
     "Application.Client.executor": "Run",
+    "Application.ClientDisplay.executor": "Run",
     "Application.Server.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "dart.analysis.tool.window.visible": "false",
