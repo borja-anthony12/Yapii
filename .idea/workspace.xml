@@ -4,11 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="17e61991-7383-4a62-806e-79fbf43dbfa0" name="Changes" comment="Fixed names">
+    <list default="true" id="17e61991-7383-4a62-806e-79fbf43dbfa0" name="Changes" comment="tried fixing this. I'm crying still. Please help me, I need therapy after this monster">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Client/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Client/ClientDisplay.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ClientDisplay.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Client/LoginPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/LoginPage.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,24 +41,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.ChatClient (2).executor": "Run",
-    "Application.ChatClient.executor": "Run",
-    "Application.ChatServer.executor": "Run",
-    "Application.Client.executor": "Run",
-    "Application.ClientDisplay.executor": "Run",
-    "Application.Server.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.ChatClient (2).executor&quot;: &quot;Run&quot;,
+    &quot;Application.ChatClient.executor&quot;: &quot;Run&quot;,
+    &quot;Application.ChatServer.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Client.executor&quot;: &quot;Run&quot;,
+    &quot;Application.ClientDisplay.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Server.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="ChatClient (2)" type="Application" factoryName="Application" singleton="false" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="src.Client.ChatClient" />
@@ -147,7 +144,15 @@
       <option name="project" value="LOCAL" />
       <updated>1736184321730</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="tried fixing this. I'm crying still. Please help me, I need therapy after this monster">
+      <option name="closed" value="true" />
+      <created>1736356553826</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1736356553826</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -165,6 +170,7 @@
     <MESSAGE value="Added Encryption Code" />
     <MESSAGE value="Fixed chat feature from not working. Added commands as well" />
     <MESSAGE value="Fixed names" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed names" />
+    <MESSAGE value="tried fixing this. I'm crying still. Please help me, I need therapy after this monster" />
+    <option name="LAST_COMMIT_MESSAGE" value="tried fixing this. I'm crying still. Please help me, I need therapy after this monster" />
   </component>
 </project>
