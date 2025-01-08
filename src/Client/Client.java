@@ -132,4 +132,8 @@ public class Client {
 			display.showError("Error during shutdown: " + e.getMessage());
 		}
 	}
+	
+	public static void main(String[] args) {
+		new ClientDisplay();
+	}
 }

@@ -33,6 +33,7 @@ public class RegisterPage extends JPanel {
         gbc.insets = new Insets(0, 30, 20, 30);
         mainPanel.add(registerHeader, gbc);
         
+        
         // Username field
         addFormField(mainPanel, "USERNAME", usernameField = new JTextField(30), gbc);
         
@@ -44,6 +45,34 @@ public class RegisterPage extends JPanel {
         
         // Confirm Password field
         addFormField(mainPanel, "CONFIRM PASSWORD", confirmPasswordField = new JPasswordField(30), gbc);
+        
+     // Register button
+        JButton registerButton = new JButton("REGISTER");
+        registerButton.setPreferredSize(new Dimension(usernameField.getPreferredSize().width, 55));
+        registerButton.setFont(new Font("Arial", Font.BOLD, 20));
+        registerButton.setBackground(Color.WHITE);
+        registerButton.setForeground(new Color(178, 230, 210));
+        registerButton.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+        registerButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        registerButton.setFocusPainted(false);
+        gbc.insets = new Insets(20, 30, 10, 30);
+        mainPanel.add(registerButton, gbc);
+
+        registerButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                registerButton.setBackground(new Color(178, 230, 210));
+                registerButton.setForeground(Color.WHITE);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                registerButton.setBackground(Color.WHITE);
+                registerButton.setForeground(new Color(178, 230, 210));
+            }
+        });
+
+        registerButton.addActionListener(e -> handleRegister());
         
         // Back to login link panel
         JPanel loginPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));

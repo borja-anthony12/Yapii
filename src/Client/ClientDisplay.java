@@ -27,12 +27,13 @@ public class ClientDisplay extends JFrame {
         layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(screenSize);
 
-        loginPage = new LoginPage(this);
-        registerPage = new RegisterPage(this);
-        mainPanel = createMainPanel();
         messageArea = new JTextArea();
         messageText = new JTextField(30);
         nameLabel = new JLabel("User Name", SwingConstants.CENTER);
+        loginPage = new LoginPage(this);
+        registerPage = new RegisterPage(this);
+        mainPanel = createMainPanel();
+        
 
         initializeUI();
         client = new Client(this);
@@ -209,9 +210,5 @@ public class ClientDisplay extends JFrame {
 
     public File getSelectedFile() {
         return selectedFile;
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(ClientDisplay::new);
     }
 }
