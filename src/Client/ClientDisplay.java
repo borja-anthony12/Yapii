@@ -2,17 +2,16 @@ package Client;
 
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.plaf.basic.BasicScrollBarUI;
 
 import java.awt.*;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.function.Function;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 
 public class ClientDisplay extends JFrame {
 	final static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+	private MessageDisplayPanel messageDisplay;
 	private final JLayeredPane layeredPane;
 	private final LoginPage loginPage;
 	private final RegisterPage registerPage;
@@ -43,7 +42,7 @@ public class ClientDisplay extends JFrame {
 		initializeUI();
 		client = new Client(this);
 
-		setContentPane(layeredPane);
+		setContentPane(mainPanel);
 		setVisible(true);
 	}
 
@@ -60,7 +59,7 @@ public class ClientDisplay extends JFrame {
 		JPanel sidebarPanel = createSidebarPanel();
 
 		// Main chat area
-		JPanel chatPanel = new JPanel(new BorderLayout(0, 0));
+		JPanel chatPanel = createMessagePanel();
 		chatPanel.setBackground(Color.WHITE);
 
 		// Message display area with custom background
@@ -163,26 +162,12 @@ public class ClientDisplay extends JFrame {
 
 	// Update the createMainPanel method to use the new components
 	private JPanel createMessagePanel() {
-		JPanel panel = new JPanel(new BorderLayout());
-
-		// Replace JTextArea with custom message display
-		MessageDisplayPanel messageDisplay = new MessageDisplayPanel();
-		JScrollPane scrollPane = new JScrollPane(messageDisplay);
-		scrollPane.setBorder(null);
-		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-
-		// Add custom scroll bar UI if desired
-		scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
-			@Override
-			protected void configureScrollBarColors() {
-				this.thumbColor = new Color(200, 200, 200);
-			}
-		});
-
-		panel.add(scrollPane, BorderLayout.CENTER);
-		panel.setBackground(Color.WHITE);
-
-		return panel;
+	    JPanel panel = new JPanel(new BorderLayout());
+	    messageDisplay = new MessageDisplayPanel(); // Initialize field
+	    JScrollPane scrollPane = new JScrollPane(messageDisplay);
+	    scrollPane.setBorder(null);
+	    panel.add(scrollPane, BorderLayout.CENTER);
+	    return panel;
 	}
 
 	private JPanel createInputPanel() {
@@ -402,19 +387,10 @@ public class ClientDisplay extends JFrame {
 
 	// Update the appendMessage method to use the new message display
 	public void appendMessage(String message) {
-		if (messageArea.getParent().getParent() instanceof JScrollPane scrollPane) {
-			JViewport viewport = scrollPane.getViewport();
-			if (viewport.getView() instanceof MessageDisplayPanel messageDisplay) {
-				boolean sentByMe = message.startsWith(nameLabel.getText());
-				messageDisplay.addMessage(message, sentByMe);
-
-				// Scroll to bottom
-				SwingUtilities.invokeLater(() -> {
-					JScrollBar vertical = scrollPane.getVerticalScrollBar();
-					vertical.setValue(vertical.getMaximum());
-				});
-			}
-		}
+	    boolean sentByMe = message.startsWith(nameLabel.getText());
+	    messageDisplay.addMessage(message, sentByMe);
+	    revalidate();
+	    repaint();
 	}
 
 	public void showError(String message) {
