@@ -16,7 +16,6 @@ public class ClientDisplay extends JFrame {
 	private final LoginPage loginPage;
 	private final RegisterPage registerPage;
 	private final JPanel mainPanel;
-	private JTextArea messageArea;
 	private JTextField messageText;
 	private final JLabel nameLabel;
 	private File selectedFile;
@@ -27,64 +26,42 @@ public class ClientDisplay extends JFrame {
 	public ClientDisplay() {
 		setSize(screenSize);
 		setUndecorated(true);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		layeredPane = new JLayeredPane();
-		layeredPane.setPreferredSize(screenSize);
+        layeredPane = new JLayeredPane();
+        layeredPane.setPreferredSize(screenSize);
 
-		messageArea = new JTextArea();
-		messageText = new JTextField(30);
-		nameLabel = new JLabel("User Name", SwingConstants.CENTER);
-		loginPage = new LoginPage(this);
-		registerPage = new RegisterPage(this);
-		mainPanel = createMainPanel();
+        messageText = new JTextField(30);
+        nameLabel = new JLabel("User Name", SwingConstants.CENTER);
+        loginPage = new LoginPage(this);
+        registerPage = new RegisterPage(this);
+        mainPanel = createMainPanel();
 
-		initializeUI();
-		client = new Client(this);
+        initializeUI();
+        client = new Client(this);
 
-		setContentPane(mainPanel);
-		setVisible(true);
+        setContentPane(layeredPane);
+        setVisible(true);
 	}
 
 	private JPanel createMainPanel() {
-		JPanel panel = new JPanel(new BorderLayout(0, 0));
-		panel.setBackground(Color.WHITE);
+        JPanel panel = new JPanel(new BorderLayout(0, 0));
+        panel.setBackground(Color.WHITE);
 
-		// Top panel with profile info
-		JPanel topPanel = createTopPanel();
-		topPanel.setBackground(Color.WHITE);
-		topPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
+        // Top panel with profile info
+        JPanel topPanel = createTopPanel();
+        panel.add(topPanel, BorderLayout.NORTH);
 
-		// Left sidebar
-		JPanel sidebarPanel = createSidebarPanel();
+        // Left sidebar
+        JPanel sidebarPanel = createSidebarPanel();
+        panel.add(sidebarPanel, BorderLayout.WEST);
 
-		// Main chat area
-		JPanel chatPanel = createMessagePanel();
-		chatPanel.setBackground(Color.WHITE);
+        // Main chat area
+        JPanel chatPanel = createMessagePanel();
+        panel.add(chatPanel, BorderLayout.CENTER);
 
-		// Message display area with custom background
-		messageArea = new JTextArea();
-		messageArea.setEditable(false);
-		messageArea.setBackground(new Color(245, 245, 245));
-		messageArea.setMargin(new Insets(10, 10, 10, 10));
-		messageArea.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		JScrollPane scrollPane = new JScrollPane(messageArea);
-		scrollPane.setBorder(null);
-
-		// Bottom input panel
-		JPanel inputPanel = createInputPanel();
-		inputPanel.setBackground(Color.WHITE);
-
-		chatPanel.add(scrollPane, BorderLayout.CENTER);
-		chatPanel.add(inputPanel, BorderLayout.SOUTH);
-
-		// Add components to main panel
-		panel.add(topPanel, BorderLayout.NORTH);
-		panel.add(sidebarPanel, BorderLayout.WEST);
-		panel.add(chatPanel, BorderLayout.CENTER);
-
-		return panel;
-	}
+        return panel;
+    }
 
 	private JPanel createSidebarPanel() {
 		JPanel sidebar = new JPanel();
@@ -162,69 +139,91 @@ public class ClientDisplay extends JFrame {
 
 	// Update the createMainPanel method to use the new components
 	private JPanel createMessagePanel() {
-	    JPanel panel = new JPanel(new BorderLayout());
-	    messageDisplay = new MessageDisplayPanel(); // Initialize field
-	    JScrollPane scrollPane = new JScrollPane(messageDisplay);
-	    scrollPane.setBorder(null);
-	    panel.add(scrollPane, BorderLayout.CENTER);
-	    return panel;
-	}
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(Color.WHITE);
+
+        // Initialize message display
+        messageDisplay = new MessageDisplayPanel();
+        JScrollPane scrollPane = new JScrollPane(messageDisplay);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setBorder(null);
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        // Add input panel
+        JPanel inputPanel = createInputPanel();
+        panel.add(inputPanel, BorderLayout.SOUTH);
+
+        return panel;
+    }
 
 	private JPanel createInputPanel() {
-		JPanel panel = new JPanel(new BorderLayout(10, 0));
-		panel.setBackground(Color.WHITE);
+	    JPanel panel = new JPanel(new BorderLayout(10, 0));
+	    panel.setBackground(Color.WHITE);
+	    panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-		// Custom rounded panel for input area
-		JPanel inputWrapper = new JPanel(new BorderLayout()) {
-			@Override
-			protected void paintComponent(Graphics g) {
-				Graphics2D g2 = (Graphics2D) g.create();
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setColor(new Color(245, 245, 245));
-				g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 25, 25);
-				g2.dispose();
-			}
-		};
-		inputWrapper.setOpaque(false);
+	    // Create a wrapper panel with a border
+	    JPanel inputWrapper = new JPanel(new BorderLayout(10, 0)) {
+	        @Override
+	        protected void paintComponent(Graphics g) {
+	            Graphics2D g2 = (Graphics2D) g.create();
+	            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	            g2.setColor(new Color(245, 245, 245));
+	            g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 25, 25);
+	            g2.setColor(new Color(230, 230, 230));
+	            g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 25, 25);
+	            g2.dispose();
+	        }
+	    };
+	    inputWrapper.setOpaque(false);
+	    inputWrapper.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
 
-		// Update message text field
-		messageText = new JTextField() {
-			@Override
-			public void setBorder(Border border) {
-				// Remove border
-			}
-		};
-		messageText.setOpaque(false);
-		messageText.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+	    // Message text field with custom styling
+	    messageText = new JTextField();
+	    messageText.setBorder(null);
+	    messageText.setBackground(new Color(245, 245, 245));
+	    messageText.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+	    
+	    // Add action listener for Enter key
+	    messageText.addActionListener(e -> sendMessage());
 
-		// Create button panel with icons
-		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
-		buttonPanel.setOpaque(false);
+	    // Create a stylish send button
+	    JButton sendButton = new JButton("Send") {
+	        @Override
+	        protected void paintComponent(Graphics g) {
+	            Graphics2D g2 = (Graphics2D) g.create();
+	            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	            if (getModel().isPressed()) {
+	                g2.setColor(new Color(108, 13, 196));
+	            } else if (getModel().isRollover()) {
+	                g2.setColor(new Color(138, 43, 226));
+	            } else {
+	                g2.setColor(new Color(148, 53, 236));
+	            }
+	            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+	            g2.setColor(Color.WHITE);
+	            FontMetrics fm = g2.getFontMetrics();
+	            int textX = (getWidth() - fm.stringWidth(getText())) / 2;
+	            int textY = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
+	            g2.drawString(getText(), textX, textY);
+	            g2.dispose();
+	        }
+	    };
+	    sendButton.setPreferredSize(new Dimension(80, 35));
+	    sendButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
+	    sendButton.setBorderPainted(false);
+	    sendButton.setContentAreaFilled(false);
+	    sendButton.setFocusPainted(false);
+	    sendButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+	    sendButton.addActionListener(e -> sendMessage());
 
-		// Attachment button
-		JButton attachButton = new JButton();
-		attachButton.setIcon(createAttachmentIcon());
-		styleButton(attachButton);
-		attachButton.addActionListener(e -> handleFileImport());
+	    // Add components to the wrapper
+	    inputWrapper.add(messageText, BorderLayout.CENTER);
+	    inputWrapper.add(sendButton, BorderLayout.EAST);
 
-		// Send button
-		JButton sendButton = new JButton();
-		sendButton.setIcon(createSendIcon());
-		styleButton(sendButton);
-		sendButton.addActionListener(e -> sendMessage());
+	    // Add wrapper to main panel
+	    panel.add(inputWrapper, BorderLayout.CENTER);
 
-		buttonPanel.add(attachButton);
-		buttonPanel.add(sendButton);
-
-		// Add components to input wrapper
-		inputWrapper.add(messageText, BorderLayout.CENTER);
-		inputWrapper.add(buttonPanel, BorderLayout.EAST);
-		inputWrapper.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 10));
-
-		panel.add(inputWrapper, BorderLayout.CENTER);
-		panel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
-
-		return panel;
+	    return panel;
 	}
 
 	// Helper method to style buttons
@@ -232,27 +231,7 @@ public class ClientDisplay extends JFrame {
 		button.setBorderPainted(false);
 		button.setContentAreaFilled(false);
 		button.setFocusPainted(false);
-		button.setPreferredSize(new Dimension(32, 32));
-	}
-
-	private static class CircularAvatar extends JLabel {
-		private final int size;
-
-		public CircularAvatar(int size) {
-			this.size = size;
-			setPreferredSize(new Dimension(size, size));
-			setBackground(new Color(200, 200, 200));
-			setOpaque(true);
-		}
-
-		@Override
-		protected void paintComponent(Graphics g) {
-			Graphics2D g2 = (Graphics2D) g.create();
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			g2.setColor(getBackground());
-			g2.fillOval(0, 0, size - 1, size - 1);
-			g2.dispose();
-		}
+		button.setPreferredSize(new Dimension(40, 40));
 	}
 
 	// Create simple vector icons since we can't load image files
@@ -267,7 +246,7 @@ public class ClientDisplay extends JFrame {
 			g2.fillPolygon(xPoints, yPoints, 3);
 			g2.dispose();
 			return bi;
-		}, 16);
+		}, 20);
 	}
 
 	private ImageIcon createAttachmentIcon() {
@@ -281,7 +260,7 @@ public class ClientDisplay extends JFrame {
 			g2.drawLine(size / 2, size / 2, size / 2, size - 4);
 			g2.dispose();
 			return bi;
-		}, 16);
+		}, 20);
 	}
 
 	private ImageIcon createIcon(Function<Integer, BufferedImage> drawer, int size) {
@@ -289,16 +268,22 @@ public class ClientDisplay extends JFrame {
 	}
 
 	private void initializeUI() {
-		setupLayeredPane();
-		setContentPane(layeredPane);
-	}
+        setupLayeredPane();
+        showPage("MAIN");  // Start with login page
+    }
 
 	private void setupLayeredPane() {
-		loginPage.setBounds(0, 0, screenSize.width, screenSize.height);
-		registerPage.setBounds(screenSize.width, 0, screenSize.width, screenSize.height);
-		layeredPane.add(loginPage, JLayeredPane.DEFAULT_LAYER);
-		layeredPane.add(registerPage, JLayeredPane.DEFAULT_LAYER);
-	}
+        loginPage.setBounds(0, 0, screenSize.width, screenSize.height);
+        registerPage.setBounds(screenSize.width, 0, screenSize.width, screenSize.height);
+        mainPanel.setBounds(0, 0, screenSize.width, screenSize.height);
+        
+        layeredPane.add(loginPage, JLayeredPane.DEFAULT_LAYER);
+        layeredPane.add(registerPage, JLayeredPane.DEFAULT_LAYER);
+        layeredPane.add(mainPanel, JLayeredPane.DEFAULT_LAYER);
+        
+        mainPanel.setVisible(false);  // Hide main panel initially
+    }
+
 
 	private void handleFileImport() {
 		try {
@@ -316,32 +301,32 @@ public class ClientDisplay extends JFrame {
 	}
 
 	private void sendMessage() {
-		String text = messageText.getText().trim();
-		if (!text.isEmpty()) {
-			client.sendMessage(text);
-			messageText.setText("");
-		}
-	}
+        String text = messageText.getText().trim();
+        if (!text.isEmpty()) {
+            client.sendMessage(text);
+            messageText.setText("");
+        }
+    }
 
 	public void authenticate(String username, String password, boolean isRegistration) {
 		client.authenticate(username, password, isRegistration);
 	}
 
 	public void showPage(String page) {
-		if (isAnimating)
-			return;
+        if (isAnimating) return;
 
-		switch (page) {
-		case "REG" -> slideTransition(loginPage, registerPage, true);
-		case "LOGIN" -> slideTransition(registerPage, loginPage, false);
-		case "MAIN" -> {
-			layeredPane.removeAll();
-			setContentPane(mainPanel);
-		}
-		}
-		revalidate();
-		repaint();
-	}
+        switch (page) {
+            case "REG" -> slideTransition(loginPage, registerPage, true);
+            case "LOGIN" -> slideTransition(registerPage, loginPage, false);
+            case "MAIN" -> {
+                loginPage.setVisible(false);
+                registerPage.setVisible(false);
+                mainPanel.setVisible(true);
+                revalidate();
+                repaint();
+            }
+        }
+    }
 
 	private void slideTransition(JComponent fromPage, JComponent toPage, boolean slideLeft) {
 		isAnimating = true;
@@ -385,13 +370,14 @@ public class ClientDisplay extends JFrame {
 		nameLabel.setText(name);
 	}
 
-	// Update the appendMessage method to use the new message display
 	public void appendMessage(String message) {
-	    boolean sentByMe = message.startsWith(nameLabel.getText());
-	    messageDisplay.addMessage(message, sentByMe);
-	    revalidate();
-	    repaint();
-	}
+        boolean sentByMe = message.startsWith(nameLabel.getText());
+        SwingUtilities.invokeLater(() -> {
+            messageDisplay.addMessage(message, sentByMe);
+            messageDisplay.revalidate();
+            messageDisplay.repaint();
+        });
+    }
 
 	public void showError(String message) {
 		JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
@@ -399,5 +385,25 @@ public class ClientDisplay extends JFrame {
 
 	public File getSelectedFile() {
 		return selectedFile;
+	}
+	
+	private static class CircularAvatar extends JLabel {
+		private final int size;
+
+		public CircularAvatar(int size) {
+			this.size = size;
+			setPreferredSize(new Dimension(size, size));
+			setBackground(new Color(200, 200, 200));
+			setOpaque(true);
+		}
+
+		@Override
+		protected void paintComponent(Graphics g) {
+			Graphics2D g2 = (Graphics2D) g.create();
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.setColor(getBackground());
+			g2.fillOval(0, 0, size - 1, size - 1);
+			g2.dispose();
+		}
 	}
 }
