@@ -55,12 +55,17 @@ public class Client {
 	}
 
 	private void processServerMessage(String message) {
-		if (message.contains("Login successful")) {
+		if (message.startsWith("[")) {
+			// Regular chat message
+			display.appendMessage(message);
+		} else if (message.contains("Login successful")) {
 			display.showPage("MAIN");
+			display.setName(message.split(" ")[2]); // Extract username
 			display.appendMessage("\u001B[32m" + message + "\u001B[0m");
 		} else if (message.contains("Registration successful")) {
+			display.showPage("LOGIN");
 			display.appendMessage("\u001B[32m" + message + "\u001B[0m");
-		} else if (message.contains("Login failed")) {
+		} else if (message.contains("Login failed") || message.contains("Registration failed")) {
 			display.appendMessage("\u001B[31m" + message + "\u001B[0m");
 		} else {
 			display.appendMessage(message);
