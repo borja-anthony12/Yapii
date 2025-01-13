@@ -10,8 +10,10 @@ public class RegisterPage extends JPanel {
     private JPasswordField passwordField;
     private JPasswordField confirmPasswordField;
     private JTextField emailField;
+    private ClientDisplay display;
     
     public RegisterPage(ClientDisplay display) {
+        this.display = display;
         setLayout(new BorderLayout());
         setPreferredSize(ClientDisplay.screenSize);
         
@@ -125,9 +127,11 @@ public class RegisterPage extends JPanel {
         String email = emailField.getText();
         String password = new String(passwordField.getPassword());
         String confirmPassword = new String(confirmPasswordField.getPassword());
-        
+
         if (validateInputs(username, email, password, confirmPassword)) {
-            showMessage(username + " is registered");
+            // Send registration to server through client
+            display.authenticate(username, password, true);
+            display.setName(username);
         }
     }
     
