@@ -25,6 +25,31 @@ public class Server {
 	private static final ConcurrentMap<String, ClientHandler> activeClients = new ConcurrentHashMap<>();
 	private static final ExecutorService clientExecutor = Executors.newFixedThreadPool(MAX_CLIENTS);
 	private static final Map<String, ChatRoom> chatRooms = new ConcurrentHashMap<>();
+	private static final String USER_DATA_FILE = "user_accounts.dat";
+
+	static {
+		loadUserAccounts();
+	}
+
+	private static void loadUserAccounts() {
+		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(USER_DATA_FILE))) {
+			@SuppressWarnings("unchecked")
+			Map<String, UserAccount> loadedAccounts = (Map<String, UserAccount>) ois.readObject();
+			userAccounts.putAll(loadedAccounts);
+			SECURITY_LOGGER.info("Loaded " + loadedAccounts.size() + " user accounts");
+		} catch (IOException | ClassNotFoundException e) {
+			SECURITY_LOGGER.info("No existing user accounts found or error loading accounts");
+		}
+	}
+
+	private static void saveUserAccounts() {
+		try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(USER_DATA_FILE))) {
+			oos.writeObject(new HashMap<>(userAccounts));
+			SECURITY_LOGGER.info("Saved " + userAccounts.size() + " user accounts");
+		} catch (IOException e) {
+			SECURITY_LOGGER.severe("Error saving user accounts: " + e.getMessage());
+		}
+	}
 
 	// Chat room management
 	private static class ChatRoom {
@@ -50,7 +75,9 @@ public class Server {
 		}
 	}
 
-	private static class UserAccount {
+	// Make UserAccount serializable
+	private static class UserAccount implements Serializable {
+		private static final long serialVersionUID = 1L;
 		final String hashedPassword;
 		final byte[] salt;
 		final AtomicInteger loginAttempts = new AtomicInteger(0);
@@ -138,19 +165,21 @@ public class Server {
 	}
 
 	private static String registerNewUser(BufferedReader input, PrintWriter output) throws IOException {
-		output.println("Enter username (min 3 characters):");
 		String username = sanitizeInput(input.readLine());
+		String password = sanitizeInput(input.readLine());
 
-		if (username == null || !username.matches("^[a-zA-Z0-9._-]{3,}$") || userAccounts.containsKey(username)) {
-			output.println("Invalid username. Registration failed.");
+		if (username == null || !username.matches("^[a-zA-Z0-9._-]{3,}$")) {
+			output.println("Registration failed: Invalid username");
 			return null;
 		}
 
-		output.println("Enter password (min 12 chars, mix of upper/lower/number/special chars):");
-		String password = sanitizeInput(input.readLine());
+		if (userAccounts.containsKey(username)) {
+			output.println("Registration failed: Username already exists");
+			return null;
+		}
 
 		if (!isValidPassword(password)) {
-			output.println("Password does not meet complexity requirements.");
+			output.println("Registration failed: Password does not meet requirements");
 			return null;
 		}
 
@@ -159,12 +188,13 @@ public class Server {
 		String hashedPassword = hashPassword(password, salt);
 
 		if (hashedPassword == null) {
-			output.println("Password hashing failed.");
+			output.println("Registration failed: Internal error");
 			return null;
 		}
 
 		UserAccount newAccount = new UserAccount(hashedPassword, salt);
 		userAccounts.put(username, newAccount);
+		saveUserAccounts(); // Save after registration
 		output.println("Registration successful!");
 		return username;
 	}
@@ -334,13 +364,11 @@ public class Server {
 	}
 
 	public static void main(String[] args) {
+		// Add shutdown hook to save user accounts
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-			try {
-				clientExecutor.shutdownNow();
-				SECURITY_LOGGER.info("Server shut down gracefully.");
-			} catch (Exception e) {
-				SECURITY_LOGGER.severe("Error during shutdown: " + e.getMessage());
-			}
+			saveUserAccounts();
+			clientExecutor.shutdownNow();
+			SECURITY_LOGGER.info("Server shut down gracefully.");
 		}));
 
 		try (ServerSocket serverSocket = new ServerSocket(PORT)) {

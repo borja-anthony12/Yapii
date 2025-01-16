@@ -269,7 +269,7 @@ public class ClientDisplay extends JFrame {
 
 	private void initializeUI() {
         setupLayeredPane();
-        showPage("MAIN");  // Start with login page
+        showPage("LOGIN");  // Start with login page
     }
 
 	private void setupLayeredPane() {

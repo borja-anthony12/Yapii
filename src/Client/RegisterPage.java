@@ -10,8 +10,10 @@ public class RegisterPage extends JPanel {
     private JPasswordField passwordField;
     private JPasswordField confirmPasswordField;
     private JTextField emailField;
-    
+    private final ClientDisplay display;
+
     public RegisterPage(ClientDisplay display) {
+        this.display = display;
         setLayout(new BorderLayout());
         setPreferredSize(ClientDisplay.screenSize);
         
@@ -121,37 +123,44 @@ public class RegisterPage extends JPanel {
     }
 
     private void handleRegister() {
-        String username = usernameField.getText();
-        String email = emailField.getText();
+        String username = usernameField.getText().trim();
+        String email = emailField.getText().trim();
         String password = new String(passwordField.getPassword());
         String confirmPassword = new String(confirmPasswordField.getPassword());
-        
+
         if (validateInputs(username, email, password, confirmPassword)) {
-            showMessage(username + " is registered");
+            // Send registration request to server through ClientDisplay
+            display.authenticate(username, password, true);
+
+            // Clear fields
+            usernameField.setText("");
+            emailField.setText("");
+            passwordField.setText("");
+            confirmPasswordField.setText("");
         }
     }
-    
+
     private boolean validateInputs(String username, String email, String password, String confirmPassword) {
-        if (username.trim().isEmpty()) {
+        if (username.isEmpty()) {
             showError("Username cannot be empty");
             return false;
         }
-        
-        if (email.trim().isEmpty() || !email.contains("@")) {
+
+        if (email.isEmpty() || !email.contains("@")) {
             showError("Please enter a valid email address");
             return false;
         }
-        
-        if (password.length() < 6) {
-            showError("Password must be at least 6 characters long");
+
+        if (password.length() < 12) {
+            showError("Password must be at least 12 characters long");
             return false;
         }
-        
+
         if (!password.equals(confirmPassword)) {
             showError("Passwords do not match");
             return false;
         }
-        
+
         return true;
     }
     
