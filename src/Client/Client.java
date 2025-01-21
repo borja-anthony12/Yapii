@@ -68,11 +68,11 @@ public class Client {
 	}
 
 	public void sendMessage(String text) {
-		if (text.startsWith("/")) {
-			handleCommand(text);
-		} else {
-			serverOutput.println("MESSAGE " + currentRoom + " " + text);
-		}
+	    if (text.startsWith("/")) {
+	        handleCommand(text);
+	    } else {
+	        serverOutput.println("MESSAGE " + currentRoom + " " + text);
+	    }
 	}
 
 	public void authenticate(String username, String password, boolean isRegistration) {

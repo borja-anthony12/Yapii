@@ -3,6 +3,7 @@ package Client;
 import java.awt.*;
 import javax.swing.*;
 
+
 public class ChatMessagePanel extends JPanel {
     private final String message;
     private final boolean sentByMe;
@@ -13,6 +14,7 @@ public class ChatMessagePanel extends JPanel {
         this.message = message;
         this.sentByMe = sentByMe;
         setOpaque(false);
+        
         setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
     }
 
