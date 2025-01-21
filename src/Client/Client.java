@@ -6,7 +6,7 @@ import java.net.*;
 import java.util.concurrent.*;
 
 public class Client {
-	private static final String HOST = "localhost";
+	private static final String HOST = "10.8.49.161";
 	private static final int PORT = 5000;
 	private Socket socket;
 	private BufferedReader serverInput;
@@ -33,6 +33,7 @@ public class Client {
 			SwingUtilities.invokeLater(() ->
 					display.showError("Could not connect to server: " + e.getMessage())
 			);
+			shutdown(); // Ensure resources are cleaned up
 		}
 	}
 
@@ -55,16 +56,19 @@ public class Client {
 	}
 
 	private void processServerMessage(String message) {
-		if (message.contains("Login successful")) {
-			display.showPage("MAIN");
-			display.appendMessage("\u001B[32m" + message + "\u001B[0m");
-		} else if (message.contains("Registration successful")) {
-			display.appendMessage("\u001B[32m" + message + "\u001B[0m");
-		} else if (message.contains("Login failed")) {
-			display.appendMessage("\u001B[31m" + message + "\u001B[0m");
-		} else {
-			display.appendMessage(message);
-		}
+		SwingUtilities.invokeLater(() -> {
+			if (message.contains("Login successful")) {
+				display.showPage("MAIN");
+				display.appendMessage("\u001B[32m" + message + "\u001B[0m");
+			} else if (message.contains("Registration successful")) {
+				display.showPage("LOGIN");
+				display.appendMessage("\u001B[32m" + message + "\u001B[0m");
+			} else if (message.contains("Login failed") || message.contains("Registration failed")) {
+				display.appendMessage("\u001B[31m" + message + "\u001B[0m");
+			} else {
+				display.appendMessage(message);
+			}
+		});
 	}
 
 	public void sendMessage(String text) {
@@ -76,9 +80,25 @@ public class Client {
 	}
 
 	public void authenticate(String username, String password, boolean isRegistration) {
-		serverOutput.println(isRegistration ? "2" : "1");
-		serverOutput.println(username);
-		serverOutput.println(password);
+		if (socket == null || !socket.isConnected()) {
+			setupNetworking();
+		}
+
+		try {
+			// Send authentication type
+			serverOutput.println(isRegistration ? "2" : "1");
+			// Send credentials
+			serverOutput.println(username);
+			serverOutput.println(password);
+
+			// Store username for later use
+			if (!isRegistration) {
+				display.setName(username);
+			}
+
+		} catch (Exception e) {
+			display.showError("Authentication error: " + e.getMessage());
+		}
 	}
 
 	private void handleCommand(String command) {
@@ -129,7 +149,17 @@ public class Client {
 				socket.close();
 			}
 		} catch (IOException e) {
-			display.showError("Error during shutdown: " + e.getMessage());
+			SwingUtilities.invokeLater(() ->
+					display.showError("Error during shutdown: " + e.getMessage())
+			);
+		} finally {
+			if (!executor.isTerminated()) {
+				try {
+					executor.awaitTermination(5, TimeUnit.SECONDS);
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
+			}
 		}
 	}
 	
