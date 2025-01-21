@@ -4,8 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="17e61991-7383-4a62-806e-79fbf43dbfa0" name="Changes" comment="tried fixing this. I'm crying still. Please help me, I need therapy after this monster">
+    <list default="true" id="17e61991-7383-4a62-806e-79fbf43dbfa0" name="Changes" comment="Tried fixing errors with compatibility with the display and server">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Client/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Client/ClientDisplay.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ClientDisplay.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Client/RegisterPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/RegisterPage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Server/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/Server.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,7 +19,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="Encryption" />
+        <entry key="$PROJECT_DIR$" value="Direct-Messaging" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -41,44 +45,33 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.ChatClient (2).executor&quot;: &quot;Run&quot;,
-    &quot;Application.ChatClient.executor&quot;: &quot;Run&quot;,
-    &quot;Application.ChatServer.executor&quot;: &quot;Run&quot;,
-    &quot;Application.Client.executor&quot;: &quot;Run&quot;,
-    &quot;Application.ClientDisplay.executor&quot;: &quot;Run&quot;,
-    &quot;Application.Server.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.ChatClient (2).executor": "Run",
+    "Application.ChatClient.executor": "Run",
+    "Application.ChatServer.executor": "Run",
+    "Application.Client.executor": "Run",
+    "Application.ClientDisplay.executor": "Run",
+    "Application.Server.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "FixingServer",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/borja/Downloads/github-copilot-intellij-1.5.30-242.zip",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "editor.preferences.tabs"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
-    <configuration name="ChatClient (2)" type="Application" factoryName="Application" singleton="false" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="src.Client.ChatClient" />
+    <configuration name="Client" type="Application" factoryName="Application" singleton="false" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Client.Client" />
       <module name="Yapii" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="src.Client.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="ChatClient" type="Application" factoryName="Application" singleton="false" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="src.Client.ChatClient" />
-      <module name="Yapii" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="src.Client.*" />
+          <option name="PATTERN" value="Client.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -99,7 +92,7 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.ChatClient (2)" />
+        <item itemvalue="Application.Client" />
       </list>
     </recent_temporary>
   </component>
@@ -152,7 +145,23 @@
       <option name="project" value="LOCAL" />
       <updated>1736356553826</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="workspace.xml">
+      <option name="closed" value="true" />
+      <created>1736359236717</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1736359236717</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Tried fixing errors with compatibility with the display and server">
+      <option name="closed" value="true" />
+      <created>1736789238707</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1736789238707</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -160,7 +169,19 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="origin/Update-Server" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -171,6 +192,8 @@
     <MESSAGE value="Fixed chat feature from not working. Added commands as well" />
     <MESSAGE value="Fixed names" />
     <MESSAGE value="tried fixing this. I'm crying still. Please help me, I need therapy after this monster" />
-    <option name="LAST_COMMIT_MESSAGE" value="tried fixing this. I'm crying still. Please help me, I need therapy after this monster" />
+    <MESSAGE value="workspace.xml" />
+    <MESSAGE value="Tried fixing errors with compatibility with the display and server" />
+    <option name="LAST_COMMIT_MESSAGE" value="Tried fixing errors with compatibility with the display and server" />
   </component>
 </project>
