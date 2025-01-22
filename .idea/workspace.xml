@@ -4,12 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="17e61991-7383-4a62-806e-79fbf43dbfa0" name="Changes" comment="Tried fixing errors with compatibility with the display and server">
+    <list default="true" id="17e61991-7383-4a62-806e-79fbf43dbfa0" name="Changes" comment="Fixed Server Error not working properly">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Client/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/Client.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Client/ClientDisplay.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ClientDisplay.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Client/RegisterPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/RegisterPage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Server/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/Server.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user_accounts.dat" beforeDir="false" afterPath="$PROJECT_DIR$/user_accounts.dat" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,7 +17,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="FixingServer" />
+        <entry key="$PROJECT_DIR$" value="SendingFiles" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -55,7 +53,7 @@
     "Application.Server.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "FixingServer",
+    "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/borja/Downloads/github-copilot-intellij-1.5.30-242.zip",
@@ -79,6 +77,19 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="Server" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Server.Server" />
+      <module name="Yapii" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="Server.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration default="true" type="JetRunConfigurationType">
       <method v="2">
         <option name="Make" enabled="true" />
@@ -92,6 +103,8 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Server" />
+        <item itemvalue="Application.Client" />
         <item itemvalue="Application.Client" />
       </list>
     </recent_temporary>
@@ -194,6 +207,7 @@
     <MESSAGE value="tried fixing this. I'm crying still. Please help me, I need therapy after this monster" />
     <MESSAGE value="workspace.xml" />
     <MESSAGE value="Tried fixing errors with compatibility with the display and server" />
-    <option name="LAST_COMMIT_MESSAGE" value="Tried fixing errors with compatibility with the display and server" />
+    <MESSAGE value="Fixed Server Error not working properly" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed Server Error not working properly" />
   </component>
 </project>

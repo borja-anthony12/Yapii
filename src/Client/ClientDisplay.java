@@ -30,13 +30,11 @@ public class ClientDisplay extends JFrame {
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 
-		layeredPane = new JLayeredPane();
-		layeredPane.setPreferredSize(screenSize);
-    layeredPane = new JLayeredPane();
-    layeredPane.setPreferredSize(screenSize);
+	layeredPane = new JLayeredPane();
+	layeredPane.setPreferredSize(screenSize);
 
     messageText = new JTextField(30);
-    messageArea = new JTextArea();
+
 
     nameLabel = new JLabel("User Name", SwingConstants.CENTER);
     loginPage = new LoginPage(this);
@@ -46,7 +44,7 @@ public class ClientDisplay extends JFrame {
     initializeUI();
     client = new Client(this);
 
-    setContentPane(mainPanel);
+    setContentPane(layeredPane);
     setVisible(true);
 	}
 
@@ -75,8 +73,8 @@ public class ClientDisplay extends JFrame {
     chatPanel.setBackground(Color.WHITE);
     panel.add(chatPanel, BorderLayout.CENTER);
     
-		chatPanel.add(scrollPane, BorderLayout.CENTER);
-		chatPanel.add(inputPanel, BorderLayout.SOUTH);
+//		chatPanel.add(scrollPane, BorderLayout.CENTER);
+//		chatPanel.add(inputPanel, BorderLayout.SOUTH);
 
 		// Use a panel for the main content area (chat + input)
 		JPanel mainContentPanel = new JPanel(new BorderLayout());
@@ -257,29 +255,6 @@ public class ClientDisplay extends JFrame {
 		button.setFocusPainted(false);
 
 		button.setPreferredSize(new Dimension(32, 32));
-	}
-
-	private static class CircularAvatar extends JLabel {
-		private final int size;
-
-		public CircularAvatar(int size) {
-			this.size = size;
-			setPreferredSize(new Dimension(size, size));
-			setBackground(Color.pink);
-			setOpaque(true);
-		}
-
-		@Override
-		protected void paintComponent(Graphics g) {
-			Graphics2D g2 = (Graphics2D) g.create();
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			g2.setColor(getBackground());
-			g2.fillOval(0, 0, size - 1, size - 1);
-			g2.dispose();
-		}
-
-		button.setPreferredSize(new Dimension(40, 40));
-
 	}
 
 	// Create simple vector icons since we can't load image files
