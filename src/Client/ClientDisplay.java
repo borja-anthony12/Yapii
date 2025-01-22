@@ -23,86 +23,110 @@ public class ClientDisplay extends JFrame {
 	private Timer animationTimer;
 	private final Client client;
 
+
 	public ClientDisplay() {
 		setSize(screenSize);
 		setUndecorated(true);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        layeredPane = new JLayeredPane();
-        layeredPane.setPreferredSize(screenSize);
 
-        messageText = new JTextField(30);
-        nameLabel = new JLabel("User Name", SwingConstants.CENTER);
-        loginPage = new LoginPage(this);
-        registerPage = new RegisterPage(this);
-        mainPanel = createMainPanel();
+		layeredPane = new JLayeredPane();
+		layeredPane.setPreferredSize(screenSize);
+    layeredPane = new JLayeredPane();
+    layeredPane.setPreferredSize(screenSize);
 
-        initializeUI();
-        client = new Client(this);
+    messageText = new JTextField(30);
+    messageArea = new JTextArea();
 
-        setContentPane(layeredPane);
-        setVisible(true);
+    nameLabel = new JLabel("User Name", SwingConstants.CENTER);
+    loginPage = new LoginPage(this);
+    registerPage = new RegisterPage(this);
+    mainPanel = createMainPanel();
+
+    initializeUI();
+    client = new Client(this);
+
+    setContentPane(mainPanel);
+    setVisible(true);
 	}
 
 	private JPanel createMainPanel() {
-        JPanel panel = new JPanel(new BorderLayout(0, 0));
-        panel.setBackground(Color.WHITE);
+		// Create a base panel that will use layering
+		JPanel panel = new JPanel(null) {  // null layout for absolute positioning
+			@Override
+			public boolean isOptimizedDrawingEnabled() {
+				return false;  // Required for proper layering
+			}
+		};
+		panel.setBackground(Color.WHITE);
 
-        // Top panel with profile info
-        JPanel topPanel = createTopPanel();
-        panel.add(topPanel, BorderLayout.NORTH);
+		// Top panel with profile info
+		JPanel topPanel = createTopPanel();
+		topPanel.setBackground(new Color(145, 203, 190));
+		topPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 3, 0, new Color(115, 173, 160)));
 
-        // Left sidebar
-        JPanel sidebarPanel = createSidebarPanel();
-        panel.add(sidebarPanel, BorderLayout.WEST);
+		// Left sidebar
+		ChatSidebarPanel sidebarPanel = new ChatSidebarPanel();
 
-        // Main chat area
-        JPanel chatPanel = createMessagePanel();
-        panel.add(chatPanel, BorderLayout.CENTER);
+    
 
-        return panel;
-    }
+    // Main chat area
+    JPanel chatPanel = createMessagePanel();
+    chatPanel.setBackground(Color.WHITE);
+    panel.add(chatPanel, BorderLayout.CENTER);
+    
+		chatPanel.add(scrollPane, BorderLayout.CENTER);
+		chatPanel.add(inputPanel, BorderLayout.SOUTH);
+
+		// Use a panel for the main content area (chat + input)
+		JPanel mainContentPanel = new JPanel(new BorderLayout());
+		mainContentPanel.add(chatPanel, BorderLayout.CENTER);
+
+		// Add components to panel with specific layout and z-ordering
+		panel.setLayout(new LayoutManager() {
+			@Override
+			public void addLayoutComponent(String name, Component comp) {}
+
+			@Override
+			public void removeLayoutComponent(Component comp) {}
+
+			@Override
+			public Dimension preferredLayoutSize(Container parent) {
+				return parent.getSize();
+			}
+
+			@Override
+			public Dimension minimumLayoutSize(Container parent) {
+				return new Dimension(100, 100);
+			}
+
+			@Override
+			public void layoutContainer(Container parent) {
+				int width = parent.getWidth();
+				int height = parent.getHeight();
+				int sidebarWidth = 250;  // Adjust this value as needed
+
+				// Layout top panel across entire width
+				topPanel.setBounds(250, 0, width, 110);  // Adjust height as needed
+
+				// Layout sidebar from top of window
+				sidebarPanel.setBounds(0, 0, sidebarWidth, height);
+
+				// Layout main content panel
+				mainContentPanel.setBounds(sidebarWidth, 110, width - sidebarWidth, height - 110);
+			}
+		});
+
+		// Add components in specific order for proper layering
+		panel.add(mainContentPanel);  // Add first (bottom layer)
+		panel.add(topPanel);          // Add second (middle layer)
+		panel.add(sidebarPanel);      // Add last (top layer)
+
+		return panel;
+	}
 
 	private JPanel createSidebarPanel() {
-		JPanel sidebar = new JPanel();
-		sidebar.setPreferredSize(new Dimension(250, 0));
-		sidebar.setBackground(Color.WHITE);
-		sidebar.setLayout(new BorderLayout());
-
-		// Logo panel at top
-		JPanel logoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
-		logoPanel.setBackground(Color.WHITE);
-		JLabel logoLabel = new JLabel("Yapii");
-		logoLabel.setFont(new Font("Arial", Font.BOLD, 24));
-		logoLabel.setForeground(new Color(138, 43, 226)); // Purple color
-		logoPanel.add(logoLabel);
-
-		// Sidebar content
-		JPanel sidebarContent = new JPanel();
-		sidebarContent.setLayout(new BoxLayout(sidebarContent, BoxLayout.Y_AXIS));
-		sidebarContent.setBackground(Color.WHITE);
-
-		JLabel descLabel = new JLabel("Create spots for different");
-		JLabel descLabel2 = new JLabel("direct messages with other");
-		JLabel descLabel3 = new JLabel("groups/people");
-
-		descLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		descLabel2.setAlignmentX(Component.LEFT_ALIGNMENT);
-		descLabel3.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-		sidebarContent.add(Box.createVerticalStrut(10));
-		sidebarContent.add(descLabel);
-		sidebarContent.add(descLabel2);
-		sidebarContent.add(descLabel3);
-		sidebarContent.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
-
-		sidebar.add(logoPanel, BorderLayout.NORTH);
-		sidebar.add(sidebarContent, BorderLayout.CENTER);
-
-		// Add right border
-		sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.LIGHT_GRAY));
-
-		return sidebar;
+		return new ChatSidebarPanel();
 	}
 
 	private JPanel createTopPanel() {
@@ -111,7 +135,7 @@ public class ClientDisplay extends JFrame {
 
 		// Profile section
 		JPanel profilePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
-		profilePanel.setBackground(Color.WHITE);
+		profilePanel.setBackground(new Color(145, 203, 190));
 
 		// Create circular avatar
 		JLabel avatarLabel = new CircularAvatar(32);
@@ -119,7 +143,7 @@ public class ClientDisplay extends JFrame {
 		// Name and other details
 		JPanel namePanel = new JPanel();
 		namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.Y_AXIS));
-		namePanel.setBackground(Color.WHITE);
+		namePanel.setBackground(new Color(145, 203, 190));
 
 		nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -231,7 +255,31 @@ public class ClientDisplay extends JFrame {
 		button.setBorderPainted(false);
 		button.setContentAreaFilled(false);
 		button.setFocusPainted(false);
+
+		button.setPreferredSize(new Dimension(32, 32));
+	}
+
+	private static class CircularAvatar extends JLabel {
+		private final int size;
+
+		public CircularAvatar(int size) {
+			this.size = size;
+			setPreferredSize(new Dimension(size, size));
+			setBackground(Color.pink);
+			setOpaque(true);
+		}
+
+		@Override
+		protected void paintComponent(Graphics g) {
+			Graphics2D g2 = (Graphics2D) g.create();
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.setColor(getBackground());
+			g2.fillOval(0, 0, size - 1, size - 1);
+			g2.dispose();
+		}
+
 		button.setPreferredSize(new Dimension(40, 40));
+
 	}
 
 	// Create simple vector icons since we can't load image files
