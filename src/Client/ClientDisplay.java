@@ -35,7 +35,6 @@ public class ClientDisplay extends JFrame {
 
     messageText = new JTextField(30);
 
-
     nameLabel = new JLabel("User Name", SwingConstants.CENTER);
     loginPage = new LoginPage(this);
     registerPage = new RegisterPage(this);

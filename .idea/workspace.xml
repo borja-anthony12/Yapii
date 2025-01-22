@@ -5,8 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="17e61991-7383-4a62-806e-79fbf43dbfa0" name="Changes" comment="Fixed Server Error not working properly">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Client/ClientDisplay.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ClientDisplay.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/user_accounts.dat" beforeDir="false" afterPath="$PROJECT_DIR$/user_accounts.dat" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -174,7 +172,15 @@
       <option name="project" value="LOCAL" />
       <updated>1736789238707</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Fixed Server Error not working properly">
+      <option name="closed" value="true" />
+      <created>1737569189905</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1737569189905</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
