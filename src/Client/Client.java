@@ -6,7 +6,8 @@ import java.net.*;
 import java.util.concurrent.*;
 
 public class Client {
-	private static final String HOST = "10.8.49.161";
+	//Stefs Branch
+	private static final String HOST = "localhost";
 	private static final int PORT = 5000;
 	private Socket socket;
 	private BufferedReader serverInput;
@@ -14,13 +15,17 @@ public class Client {
 	private final ClientDisplay display;
 	private volatile boolean isRunning = true;
 	private String currentRoom = "GENERAL";
+	private DataInputStream inputStream;
+	private DataOutputStream outputStream;
 	private final ExecutorService executor = Executors.newSingleThreadExecutor();
+	private final ExecutorService executor2 = Executors.newSingleThreadExecutor();
 
 	public Client(ClientDisplay display) {
 		this.display = display;
 		setupNetworking();
 		if (socket != null && socket.isConnected()) {
 			startMessageReceiver();
+			startImageReceiver();
 		}
 	}
 
@@ -29,6 +34,8 @@ public class Client {
 			socket = new Socket(HOST, PORT);
 			serverInput = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			serverOutput = new PrintWriter(socket.getOutputStream(), true);
+			inputStream = new DataInputStream(socket.getInputStream());
+			outputStream = new DataOutputStream(socket.getOutputStream());
 		} catch (IOException e) {
 			SwingUtilities.invokeLater(() ->
 					display.showError("Could not connect to server: " + e.getMessage())
@@ -44,6 +51,41 @@ public class Client {
 				while (isRunning && (message = serverInput.readLine()) != null) {
 					final String finalMessage = message;
 					SwingUtilities.invokeLater(() -> processServerMessage(finalMessage));
+				}
+			} catch (IOException e) {
+				if (isRunning) {
+					SwingUtilities.invokeLater(() ->
+							display.showError("Lost connection to server")
+					);
+				}
+			}
+		});
+	}
+
+	private void startImageReceiver() {
+		executor2.execute(() -> {
+			try {
+				inputStream = new DataInputStream(socket.getInputStream());
+				outputStream = new DataOutputStream(socket.getOutputStream());
+				while (isRunning) {
+					String fileName = inputStream.readUTF();
+					if (!fileName.equals("SavedMSG")) {
+						int length = inputStream.readInt();
+						byte[] imageData = new byte[length];
+						inputStream.readFully(imageData, 0, length);
+						File imageFile = new File(fileName + ".png");
+						try (FileOutputStream fos = new FileOutputStream(imageFile)) {
+							fos.write(imageData);
+						}
+					} else {
+						int length = inputStream.readInt();
+						byte[] imageData = new byte[length];
+						inputStream.readFully(imageData, 0, length);
+						File imageFile = new File(fileName + ".txt");
+						try (FileOutputStream fos = new FileOutputStream(imageFile)) {
+							fos.write(imageData);
+						}
+					}
 				}
 			} catch (IOException e) {
 				if (isRunning) {
@@ -79,6 +121,28 @@ public class Client {
 	    }
 	}
 
+	private void sendImage(byte[] data, String fileName) {
+		try {
+			outputStream.writeUTF(fileName);
+			outputStream.writeInt(data.length);
+			outputStream.write(data);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void sendImage(String fileName) {
+		File imageFile = new File(fileName + ".png");
+		byte[] imageData = new byte[(int) imageFile.length()];
+		try {
+			outputStream.writeUTF(fileName);
+			outputStream.writeInt(imageData.length);
+			outputStream.write(imageData);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void authenticate(String username, String password, boolean isRegistration) {
 		if (socket == null || !socket.isConnected()) {
 			setupNetworking();
@@ -110,8 +174,14 @@ public class Client {
 			case "/join" -> handleJoin(parts);
 			case "/pm" -> handlePrivateMessage(parts);
 			case "/leave" -> handleLeave();
+			case "/img" -> handleImg(parts);
 			default -> display.appendMessage("Unknown command. Available: /join, /leave, /pm, /exit");
 		}
+	}
+
+	private void handleImg(String[] parts) {
+		//part 1 currently useless
+		sendImage(parts[2]);
 	}
 
 	private void handleExit() {

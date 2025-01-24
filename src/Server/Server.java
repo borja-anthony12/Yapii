@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.*;
 import javax.crypto.*;
 import javax.crypto.spec.*;
+import javax.swing.*;
 
 public class Server {
 	private static final int PORT = 5000;
@@ -71,6 +72,14 @@ public class Server {
 		void broadcast(String sender, String message) {
 			for (ClientHandler member : members) {
 				member.sendMessage(name, sender, message);
+			}
+		}
+
+		void broadcastImage(String sender, String fileName) {
+			File imageFile = new File(fileName + ".png");
+			byte[] imageData = new byte[(int) imageFile.length()];
+			for (ClientHandler member : members) {
+				member.sendImage(name, sender, imageData, fileName);
 			}
 		}
 	}
@@ -203,11 +212,21 @@ public class Server {
 		private final Socket clientSocket;
 		private BufferedReader input;
 		private PrintWriter output;
+		private DataInputStream inputStream;
+		private DataOutputStream outputStream;
 		private String username;
 		private String currentRoom = "GENERAL";
+		private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
 		public ClientHandler(Socket socket) {
 			this.clientSocket = socket;
+			try {
+				this.inputStream = new DataInputStream(clientSocket.getInputStream());
+				this.outputStream = new DataOutputStream(clientSocket.getOutputStream());
+				startImageReceiver();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 		private String loginUser() throws IOException {
@@ -230,6 +249,71 @@ public class Server {
 
 		private void sendMessage(String room, String sender, String message) {
 			output.println(String.format("[%s] %s: %s", room, sender, message));
+		}
+
+		private void sendImage(String room, String sender, byte[] data, String fileName) {
+			try {
+				outputStream.writeUTF(fileName);
+				outputStream.writeInt(data.length);
+				outputStream.write(data);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		private void sendImage(String room, String sender, String fileName) {
+			File imageFile = new File(fileName + ".png");
+			byte[] imageData = new byte[(int) imageFile.length()];
+			try {
+				outputStream.writeUTF(fileName);
+				outputStream.writeInt(imageData.length);
+				outputStream.write(imageData);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		private void receiveImage(InputStream inputStream, String imageName) throws IOException {
+			FileOutputStream fileOutputStream = new FileOutputStream(imageName);
+
+			byte[] buffer = new byte[4096];
+			int bytesRead;
+			while ((bytesRead = inputStream.read(buffer)) != -1) {
+				fileOutputStream.write(buffer, 0, bytesRead);
+			}
+
+			fileOutputStream.close();
+		}
+
+		private void startImageReceiver() throws IOException {
+			executor.execute(() -> {
+				try {
+					inputStream = new DataInputStream(clientSocket.getInputStream());
+					outputStream = new DataOutputStream(clientSocket.getOutputStream());
+					while (username != null) {
+						String fileName = inputStream.readUTF();
+						if (!fileName.equals("SavedMSG")) {
+							int length = inputStream.readInt();
+							byte[] imageData = new byte[length];
+							inputStream.readFully(imageData, 0, length);
+							File imageFile = new File(fileName + ".png");
+							try (FileOutputStream fos = new FileOutputStream(imageFile)) {
+								fos.write(imageData);
+							}
+						} else {
+							int length = inputStream.readInt();
+							byte[] imageData = new byte[length];
+							inputStream.readFully(imageData, 0, length);
+							File imageFile = new File(fileName + ".txt");
+							try (FileOutputStream fos = new FileOutputStream(imageFile)) {
+								fos.write(imageData);
+							}
+						}
+					}
+				} catch (IOException e) {
+
+				}
+			});
 		}
 
 		private void processCommand(String command) {
@@ -297,6 +381,19 @@ public class Server {
 					}
 					break;
 
+				case "IMG":
+					if (parts.length >= 3) {
+						String recipient = parts[1];
+						String imageName = parts[2];
+						ClientHandler targetClient = activeClients.get(recipient);
+						if (targetClient != null) {
+							sendImage("", "", imageName);
+						} else {
+							sendMessage("SERVER", "User " + recipient + " is not online.");
+						}
+					}
+					break;
+
 				case "LOGOUT":
 					// Handle cleanup before logout
 					for (ChatRoom room : chatRooms.values()) {
@@ -312,6 +409,8 @@ public class Server {
 			try {
 				input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 				output = new PrintWriter(clientSocket.getOutputStream(), true);
+				//InputStream inputStream = clientSocket.getInputStream();
+				//OutputStream outputStream = clientSocket.getOutputStream();
 
 				while (username == null) {
 					output.println("1. Login\n2. Register\n3. Exit");
