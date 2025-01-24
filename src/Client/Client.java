@@ -6,7 +6,7 @@ import java.net.*;
 import java.util.concurrent.*;
 
 public class Client {
-	private static final String HOST = "10.8.49.161";
+	private static final String HOST = "localhost";
 	private static final int PORT = 5000;
 	private Socket socket;
 	private BufferedReader serverInput;
