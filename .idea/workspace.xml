@@ -6,10 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="17e61991-7383-4a62-806e-79fbf43dbfa0" name="Changes" comment="Tried fixing errors with compatibility with the display and server">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Client/ChatMessagePanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ChatMessagePanel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Client/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Client/ClientDisplay.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ClientDisplay.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Server/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/Server.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -177,7 +173,15 @@
       <option name="project" value="LOCAL" />
       <updated>1736789238707</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Tried fixing errors with compatibility with the display and server">
+      <option name="closed" value="true" />
+      <created>1737741316324</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1737741316324</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -209,8 +213,8 @@
     <MESSAGE value="Fixed names" />
     <MESSAGE value="tried fixing this. I'm crying still. Please help me, I need therapy after this monster" />
     <MESSAGE value="workspace.xml" />
-    <MESSAGE value="Tried fixing errors with compatibility with the display and server" />
     <MESSAGE value="Fixed Server Error not working properly" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed Server Error not working properly" />
+    <MESSAGE value="Tried fixing errors with compatibility with the display and server" />
+    <option name="LAST_COMMIT_MESSAGE" value="Tried fixing errors with compatibility with the display and server" />
   </component>
 </project>
