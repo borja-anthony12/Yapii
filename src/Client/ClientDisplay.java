@@ -33,6 +33,7 @@ public class ClientDisplay extends JFrame {
 	layeredPane = new JLayeredPane();
 	layeredPane.setPreferredSize(screenSize);
 
+
     messageText = new JTextField(30);
 
     nameLabel = new JLabel("User Name", SwingConstants.CENTER);
@@ -214,7 +215,7 @@ public class ClientDisplay extends JFrame {
 	            Graphics2D g2 = (Graphics2D) g.create();
 	            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	            if (getModel().isPressed()) {
-	                g2.setColor(new Color(108, 13, 196));
+	                g2.setColor(new Color(108, 13, 196)); // CHANGE COLOUR____________________________
 	            } else if (getModel().isRollover()) {
 	                g2.setColor(new Color(138, 43, 226));
 	            } else {
@@ -392,8 +393,8 @@ public class ClientDisplay extends JFrame {
 		nameLabel.setText(name);
 	}
 
-	public void appendMessage(String message) {
-        boolean sentByMe = message.startsWith(nameLabel.getText());
+	public void appendMessage(String message, boolean sentByMe) {
+
         SwingUtilities.invokeLater(() -> {
             messageDisplay.addMessage(message, sentByMe);
             messageDisplay.revalidate();

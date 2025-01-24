@@ -56,24 +56,29 @@ public class Client {
 	}
 
 	private void processServerMessage(String message) {
+		boolean sentByMe = message.startsWith(display.getName());
 		SwingUtilities.invokeLater(() -> {
+
 			if (message.contains("Login successful")) {
 				display.showPage("MAIN");
-				display.appendMessage("\u001B[32m" + message + "\u001B[0m");
+				//display.appendMessage("\u001B[32m" + message + "\u001B[0m", sentByMe);
 			} else if (message.contains("Registration successful")) {
 				display.showPage("LOGIN");
-				display.appendMessage("\u001B[32m" + message + "\u001B[0m");
+				display.appendMessage("\u001B[32m" + message + "\u001B[0m", sentByMe);
 			} else if (message.contains("Login failed") || message.contains("Registration failed")) {
-				display.appendMessage("\u001B[31m" + message + "\u001B[0m");
+				display.appendMessage("\u001B[31m" + message + "\u001B[0m", sentByMe);
 			} else {
-				display.appendMessage(message);
+				display.appendMessage(message, sentByMe);
 			}
+
+			//display.appendMessage(message, sentByMe);
 		});
+
 	}
 
 	public void sendMessage(String text) {
 	    if (text.startsWith("/")) {
-	        handleCommand(text);
+//	        handleCommand(text);
 	    } else {
 	        serverOutput.println("MESSAGE " + currentRoom + " " + text);
 	    }
@@ -101,7 +106,7 @@ public class Client {
 		}
 	}
 
-	private void handleCommand(String command) {
+	/*private void handleCommand(String command) {
 		String[] parts = command.split("\\s+", 3);
 		String cmd = parts[0].toLowerCase();
 
@@ -110,9 +115,9 @@ public class Client {
 			case "/join" -> handleJoin(parts);
 			case "/pm" -> handlePrivateMessage(parts);
 			case "/leave" -> handleLeave();
-			default -> display.appendMessage("Unknown command. Available: /join, /leave, /pm, /exit");
+			default -> display.appendMessage("Unknown command. Available: /join, /leave, /pm, /exit", sentByMe);
 		}
-	}
+	}*/
 
 	private void handleExit() {
 		serverOutput.println("LOGOUT");

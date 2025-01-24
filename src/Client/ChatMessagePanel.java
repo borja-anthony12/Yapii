@@ -7,8 +7,8 @@ import javax.swing.*;
 public class ChatMessagePanel extends JPanel {
     private final String message;
     private final boolean sentByMe;
-    private final Color SENT_COLOR = new Color(230, 210, 12);
-    private final Color RECEIVED_COLOR = new Color(12, 12, 123);
+    private final Color SENT_COLOR = new Color(222, 141, 234);
+    private final Color RECEIVED_COLOR = new Color(191, 163, 195);
 
     public ChatMessagePanel(String message, boolean sentByMe) {
         this.message = message;

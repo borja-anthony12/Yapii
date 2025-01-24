@@ -225,11 +225,11 @@ public class Server {
 		}
 
 		private void sendMessage(String sender, String message) {
-			output.println(String.format("[GENERAL] %s: %s", sender, message));
+			output.println(String.format("%s: %s", sender, message));
 		}
 
 		private void sendMessage(String room, String sender, String message) {
-			output.println(String.format("[%s] %s: %s", room, sender, message));
+			output.println(String.format("%s: %s", sender, message));
 		}
 
 		private void processCommand(String command) {
@@ -314,7 +314,7 @@ public class Server {
 				output = new PrintWriter(clientSocket.getOutputStream(), true);
 
 				while (username == null) {
-					output.println("1. Login\n2. Register\n3. Exit");
+					//output.println("1. Login\n2. Register\n3. Exit");
 					String choice = sanitizeInput(input.readLine());
 
 					switch (choice) {
@@ -332,7 +332,7 @@ public class Server {
 				}
 
 				activeClients.put(username, this);
-				output.println("Welcome to the chat server!");
+
 
 				// Join the general chat room by default
 				ChatRoom generalRoom = chatRooms.computeIfAbsent("GENERAL", ChatRoom::new);
