@@ -58,7 +58,6 @@ public class Client {
 	private void processServerMessage(String message) {
 		boolean sentByMe = message.startsWith(display.getName());
 		SwingUtilities.invokeLater(() -> {
-
 			if (message.contains("Login successful")) {
 				display.showPage("MAIN");
 				//display.appendMessage("\u001B[32m" + message + "\u001B[0m", sentByMe);

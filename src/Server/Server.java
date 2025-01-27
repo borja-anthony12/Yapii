@@ -211,9 +211,7 @@ public class Server {
 		}
 
 		private String loginUser() throws IOException {
-			output.println("Enter username:");
 			String username = sanitizeInput(input.readLine());
-			output.println("Enter password:");
 			String password = sanitizeInput(input.readLine());
 
 			if (authenticateUser(username, password)) {
@@ -316,18 +314,16 @@ public class Server {
 				while (username == null) {
 					//output.println("1. Login\n2. Register\n3. Exit");
 					String choice = sanitizeInput(input.readLine());
-
 					switch (choice) {
 						case "1":
 							username = loginUser();
-							break;
+						break;
 						case "2":
 							username = registerNewUser(input, output);
-							break;
+						break;
 						case "3":
 							return;
-						default:
-							output.println("Invalid choice.");
+						default:          output.println("Invalid choice.");
 					}
 				}
 

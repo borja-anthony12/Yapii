@@ -4,12 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="17e61991-7383-4a62-806e-79fbf43dbfa0" name="Changes" comment="Tried fixing errors with compatibility with the display and server">
+    <list default="true" id="17e61991-7383-4a62-806e-79fbf43dbfa0" name="Changes" comment="Fixed Server Error not working properly">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Client/ChatMessagePanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ChatMessagePanel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Client/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Client/ClientDisplay.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ClientDisplay.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Server/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/Server.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user_accounts.dat" beforeDir="false" afterPath="$PROJECT_DIR$/user_accounts.dat" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,7 +32,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/borja-anthony12/Yapii.git&quot;,
-    &quot;accountId&quot;: &quot;0ba65c88-ec92-4e72-9329-5a0bc7662dab&quot;
+    &quot;accountId&quot;: &quot;d4b43190-3455-487e-b51c-7445817e5cbd&quot;
   }
 }</component>
   <component name="ProjectColorInfo">{
@@ -54,7 +53,6 @@
     &quot;Application.ClientDisplay.executor&quot;: &quot;Run&quot;,
     &quot;Application.Server.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
@@ -177,7 +175,15 @@
       <option name="project" value="LOCAL" />
       <updated>1736789238707</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Fixed Server Error not working properly">
+      <option name="closed" value="true" />
+      <created>1737569189905</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1737569189905</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
